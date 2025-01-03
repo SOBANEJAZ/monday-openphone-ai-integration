@@ -1,2 +1,5 @@
 .env
 phone_numbers.json
+members.txt
+calls.json
+members.json

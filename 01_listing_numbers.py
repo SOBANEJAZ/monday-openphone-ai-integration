@@ -8,7 +8,7 @@ load_dotenv()
 OPENPHONE_API_KEY = os.getenv("OPENPHONE_API_KEY")
 
 
-# List of all phone numbers and their corresponding ids
+# Save all the phone numbers and their details to a JSON file
 headers = {"Authorization": OPENPHONE_API_KEY}
 phone_numbers = requests.get(
     "https://api.openphone.com/v1/phone-numbers", headers=headers
