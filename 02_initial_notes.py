@@ -20,11 +20,9 @@ for item in init_data:
     data.append(item["Board_id"])
 boards = [int(item) for item in data]    
 
-b = [7580025927, 7728267820]
-
-for board in b:
+for board in boards:
     print(f"Fetching data for board {board}...")
-# Load API key from .env file
+    # Load API key from .env file
     load_dotenv()
     # API_KEY = os.getenv("MONDAY_API_KEY")
     url = "https://api.monday.com/v2"
@@ -32,7 +30,6 @@ for board in b:
         "Content-Type": "application/json",
         "Authorization": api,
     }
-
 
     def fetch_items_from_board(board_id: int) -> List[str]:
         """Fetch all items from a specified board."""
@@ -72,15 +69,17 @@ for board in b:
                     for item in items:
                         item_ids.append(item.get("id"))
             return item_ids
+        else:
+            print(f"Error fetching items from board {board_id}")
+            print(f"Response: {response.text}")
         return []
-
 
     def make_request_with_retry(
         query: str,
         variables: dict,
         batch_num: int,
         max_retries: int = 3,
-        initial_delay: float = 1.0,
+        initial_delay: float = 20,
     ) -> Tuple[dict, bool]:
         """Make a request with retry logic and exponential backoff."""
         delay = initial_delay
@@ -152,7 +151,6 @@ for board in b:
 
         return {"data": {"items": []}}, False
 
-
     def fetch_updates_in_batches(item_ids: List[str], batch_size: int = 25) -> dict:
         """Fetch updates for items in batches with retry logic and rate limiting."""
         all_updates = {"data": {"items": []}}
@@ -182,7 +180,13 @@ for board in b:
                             title
                         }
                         value
+                    value
+                    type
+                    ... on StatusValue  { # will only run for status columns
+                        label
+                        update_id
                     }
+                }
                 }
             }
             """
@@ -206,7 +210,6 @@ for board in b:
 
         return all_updates, successful_count
 
-
     def create_updates_dictionary(
         updates_data: dict,
     ) -> Tuple[Dict[str, list], Dict[str, list]]:
@@ -228,7 +231,6 @@ for board in b:
             print(f"Error processing data: {e}")
             raise
 
-
     def update_items(
         data: Any, updates_by_id: Dict[str, list], columns_by_id: Dict[str, list]
     ) -> None:
@@ -249,7 +251,6 @@ for board in b:
             for item in data:
                 update_items(item, updates_by_id, columns_by_id)
 
-
     def merge_responses(monday_data: dict, updates_data: dict) -> dict:
         """Merge the Monday data with updates and column values data."""
         try:
@@ -267,7 +268,6 @@ for board in b:
             print(f"Error merging responses: {e}")
             raise
 
-
     def main():
         board_id = board
         item_ids = fetch_items_from_board(board_id)
@@ -282,7 +282,6 @@ for board in b:
         print(f"Total items: {len(item_ids)}")
         print(f"Successfully processed: {successful_count}")
 
-
     def load_json_file(filename: str) -> dict:
         """Load and validate a JSON file."""
         try:
@@ -296,7 +295,6 @@ for board in b:
             print(f"Error: {filename} contains invalid JSON")
             raise
 
-
     def merger():
         print("Loading JSON files...")
         monday_data = load_json_file("monday_response.json")
@@ -306,7 +304,7 @@ for board in b:
         merged_data = merge_responses(monday_data, updates_data)
 
         print("Saving merged data...")
-        with open(f"initial_data/notes/{board}.json", "w") as f:
+        with open(f"initial_data/raw_notes/{board}.json", "w") as f:
             json.dump(merged_data, f, indent=2)
 
         print("Successfully created merged data file")
@@ -343,8 +341,9 @@ for board in b:
         os.remove("item_updates.json")
         print("Successfully cleaned up directory")
         print("\nMerging complete!")
-
+        time.sleep(30)
 
     if __name__ == "__main__":
         main()
         merger()
+
