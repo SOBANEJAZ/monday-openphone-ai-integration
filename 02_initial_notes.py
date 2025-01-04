@@ -20,7 +20,9 @@ for item in init_data:
     data.append(item["Board_id"])
 boards = [int(item) for item in data]    
 
-for board in boards:
+b = [7580025927, 7728267820]
+
+for board in b:
     print(f"Fetching data for board {board}...")
 # Load API key from .env file
     load_dotenv()
@@ -279,7 +281,6 @@ for board in boards:
         print("\nFinal Summary:")
         print(f"Total items: {len(item_ids)}")
         print(f"Successfully processed: {successful_count}")
-        print(f"Success rate: {(successful_count/len(item_ids))*100:.2f}%")
 
 
     def load_json_file(filename: str) -> dict:
