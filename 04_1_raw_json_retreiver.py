@@ -9,7 +9,18 @@ from requests.exceptions import RequestException
 load_dotenv()
 api = os.getenv("MONDAY_API_KEY")
 
-boards = [7728267820, 7217305033, 6719676064, 7728282886, 7835384803, 6324705748, 5258194812, 8054389710, 7580025927, 4529337523, 4482658418, 7835387740, 8054482372]
+boards = [6719676064]
+# boards = [
+#     6324705748,
+#     6719676064,
+#     4482658418,
+#     7217305033,
+#     4529337523,
+#     7728282886,
+#     7835384803,
+#     7835387740,
+#     8054482372,
+# ]
 
 for board in boards:
     print(f"Fetching data for board {board}...")
@@ -19,7 +30,7 @@ for board in boards:
     url = "https://api.monday.com/v2"
     headers = {
         "Content-Type": "application/json",
-        "Authorization": "api",
+        "Authorization": api,
     }
 
 
@@ -296,7 +307,7 @@ for board in boards:
         merged_data = merge_responses(monday_data, updates_data)
 
         print("Saving merged data...")
-        with open(f"not-in-use/notes/{board}.json", "w") as f:
+        with open(f"notes/{board}.json", "w") as f:
             json.dump(merged_data, f, indent=2)
 
         print("Successfully created merged data file")
