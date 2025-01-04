@@ -9,18 +9,16 @@ from requests.exceptions import RequestException
 load_dotenv()
 api = os.getenv("MONDAY_API_KEY")
 
-boards = [6719676064]
-# boards = [
-#     6324705748,
-#     6719676064,
-#     4482658418,
-#     7217305033,
-#     4529337523,
-#     7728282886,
-#     7835384803,
-#     7835387740,
-#     8054482372,
-# ]
+dir = "initial_data/init.json"
+with open(dir, "r") as f:
+    init_data = json.load(f)
+
+
+# converting to integers
+data = []
+for item in init_data:
+    data.append(item["Board_id"])
+boards = [int(item) for item in data]    
 
 for board in boards:
     print(f"Fetching data for board {board}...")
@@ -307,7 +305,7 @@ for board in boards:
         merged_data = merge_responses(monday_data, updates_data)
 
         print("Saving merged data...")
-        with open(f"notes/{board}.json", "w") as f:
+        with open(f"initial_data/notes/{board}.json", "w") as f:
             json.dump(merged_data, f, indent=2)
 
         print("Successfully created merged data file")
