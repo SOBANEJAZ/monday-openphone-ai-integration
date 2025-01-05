@@ -18,9 +18,11 @@ with open(dir, "r") as f:
 data = []
 for item in init_data:
     data.append(item["Board_id"])
-boards = [int(item) for item in data]    
+boards = [int(item) for item in data]  
 
-for board in boards:
+b = [6324705748]
+
+for board in b:
     print(f"Fetching data for board {board}...")
     # Load API key from .env file
     load_dotenv()
@@ -346,4 +348,3 @@ for board in boards:
     if __name__ == "__main__":
         main()
         merger()
-
