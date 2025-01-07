@@ -94,14 +94,14 @@ def process_json_data(json_data: Dict) -> List[Dict]:
 
 # Load JSON data
 
-dir = "initial_data/raw_notes/"
+dir = "data/notes/raw_notes/"
 for filename in os.listdir(dir):
     with open(os.path.join(dir, filename), "r") as f:
         json_data = json.load(f)
 
     output = process_json_data(json_data)
 
-    output_filename = f"initial_data/cleaned_notes/{filename}"
+    output_filename = f"data/notes/cleaned_notes/{filename}"
     with open(output_filename, "w") as f:
         json.dump(output, f, indent=4)
 
@@ -109,15 +109,19 @@ for filename in os.listdir(dir):
 from datetime import datetime
 import json
 from typing import List, Dict, Any
+from pytz import timezone
+import os
+import json
 
 
 def filter_json_by_date(
     data: List[Dict[Any, Any]], target_date: str = None
 ) -> List[Dict[Any, Any]]:
 
-    # Use today's date if no target date provided
+    # Use today's date in CST timezone if no target date provided
     if target_date is None:
-        target_date = datetime.now().strftime("%Y-%m-%d")
+        cst = timezone('US/Central')
+        target_date = datetime.now(cst).strftime("%Y-%m-%d")
 
     # Validate target date format
     try:
@@ -130,14 +134,13 @@ def filter_json_by_date(
 
     return filtered_data
 
-
 # Example usage
-dir = "initial_data/cleaned_notes/"
+dir = "data/notes/cleaned_notes/"
 for filename in os.listdir(dir):
     with open(os.path.join(dir, filename), "r") as f:
         data = json.load(f)
 
     filtered_data = filter_json_by_date(data)
 
-    with open(f"initial_data/cleaned_notes/{filename}", "w") as f:
+    with open(f"data/notes/filtered_notes/{filename}", "w") as f:
         json.dump(filtered_data, f, indent=4)
