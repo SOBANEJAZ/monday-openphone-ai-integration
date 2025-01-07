@@ -106,7 +106,71 @@ for filename in os.listdir(dir):
         json.dump(output, f, indent=4)
 
 
+# ----------------------------------
+# to change the timezone from
+import json
 from datetime import datetime
+import pytz
+import os
+from pathlib import Path
+
+
+def convert_utc_to_cst(input_file):
+    with open(input_file, "r") as f:
+        data = json.load(f)
+
+    utc_tz = pytz.UTC
+    cst_tz = pytz.timezone("America/Chicago")
+
+    for item in data:
+        if item["date"] and item["start_time"]:
+            start_dt_str = f"{item['date']} {item['start_time']}"
+            start_dt = datetime.strptime(start_dt_str, "%Y-%m-%d %H:%M:%S")
+            start_dt = utc_tz.localize(start_dt)
+            start_cst = start_dt.astimezone(cst_tz)
+            item["date"] = start_cst.strftime("%Y-%m-%d")
+            item["start_time"] = start_cst.strftime("%H:%M:%S")
+
+        if item["date"] and item["end_time"]:
+            end_dt_str = f"{item['date']} {item['end_time']}"
+            end_dt = datetime.strptime(end_dt_str, "%Y-%m-%d %H:%M:%S")
+            end_dt = utc_tz.localize(end_dt)
+            end_cst = end_dt.astimezone(cst_tz)
+            item["end_time"] = end_cst.strftime("%H:%M:%S")
+
+    output_file = input_file
+    with open(output_file, "w") as f:
+        json.dump(data, f, indent=4)
+
+    return output_file
+
+
+def process_directory(directory_path):
+    directory = Path(directory_path)
+    processed_files = []
+
+    for file_path in directory.glob("*.json"):
+        if not file_path.name.endswith("_CST.json"):  # Skip already processed files
+            try:
+                output_file = convert_utc_to_cst(file_path)
+                processed_files.append(output_file)
+                print(f"Processed: {file_path.name} -> {Path(output_file).name}")
+            except Exception as e:
+                print(f"Error processing {file_path.name}: {str(e)}")
+
+    return processed_files
+
+
+# Usage
+directory_path = "data/notes/cleaned_notes"  # Replace with your folder path
+processed_files = process_directory(directory_path)
+print(f"\nTotal files processed: {len(processed_files)}")
+
+
+# -------------------------------------
+#  to filter the notes by today date
+
+from datetime import datetime, timedelta
 import json
 from typing import List, Dict, Any
 from pytz import timezone
@@ -121,7 +185,7 @@ def filter_json_by_date(
     # Use today's date in CST timezone if no target date provided
     if target_date is None:
         cst = timezone('US/Central')
-        target_date = datetime.now(cst).strftime("%Y-%m-%d")
+        target_date = (datetime.now(cst) - timedelta(days=1)).strftime("%Y-%m-%d")
 
     # Validate target date format
     try:

@@ -25,24 +25,24 @@ def convert_json(data):
         to_number = call["fields"].get("To")
         direction = call["fields"].get("Direction")
         transcriptions = call["fields"].get("Transcript")
-
         start_time = call["fields"].get("Start Time")
-        if start_time:
-            start_time = datetime.strptime(
-                start_time, "%Y-%m-%dT%H:%M:%S.%fZ"
-            ).strftime("%H:%M:%S")
-        else:
-            start_time = None
-
         end_time = call["fields"].get("End Time")
-        if "T" in end_time:
-            end_time = datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%S.%fZ").strftime(
-                "%H:%M:%S"
-            )
-        else:
-            end_time = datetime.strptime(end_time, "%a, %d %b %Y %H:%M:%S %z").strftime(
-                "%H:%M:%S"
-            )
+
+        # if start_time:
+        #     start_time = datetime.strptime(
+        #         start_time, "%Y-%m-%dT%H:%M:%S.%fZ"
+        #     ).strftime("%H:%M:%S")
+        # else:
+        #     start_time = None
+
+        # if "T" in end_time:
+        #     end_time = datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%S.%fZ").strftime(
+        #         "%H:%M:%S"
+        #     )
+        # else:
+        #     end_time = datetime.strptime(end_time, "%a, %d %b %Y %H:%M:%S %z").strftime(
+        #         "%H:%M:%S"
+        #     )
 
         converted_call = {
             "Direction": direction,

@@ -13,10 +13,10 @@ for board in boards:
     # Load API key from .env file
     load_dotenv()
     API_KEY = os.getenv("MONDAY_API_KEY")
-    api = "https://api.monday.com/v2"
+    url = "https://api.monday.com/v2"
     headers = {
         "Content-Type": "application/json",
-        "Authorization": api,
+        "Authorization": API_KEY,
     }
 
     def fetch_items_from_board(board_id: int) -> List[str]:
