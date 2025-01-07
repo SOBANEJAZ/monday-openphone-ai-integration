@@ -70,3 +70,161 @@ data = filtered_data
 # Save filtered data to a new file
 with open("data/reference/phone_details.json", "w") as f:
     json.dump(data, f, indent=2)
+
+
+import json
+from datetime import datetime
+from dateutil.parser import parse
+import pytz
+
+# Define CST timezone
+cst = pytz.timezone("America/Chicago")
+
+
+# Function to determine the original datetime format
+def get_datetime_format(datetime_str):
+    if "T" in datetime_str and datetime_str.endswith("Z"):
+        if "." in datetime_str:
+            return "%Y-%m-%dT%H:%M:%S.%fZ"
+        else:
+            return "%Y-%m-%dT%H:%M:%S.Z"
+    elif (
+        datetime_str.startswith(("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
+        and "+0000" in datetime_str
+    ):
+        return "%a, %d %b %Y %H:%M:%S %z"
+    else:
+        raise ValueError(f"Unknown datetime format: {datetime_str}")
+
+
+# Load the JSON data
+with open("data/reference/phone_details.json", "r") as f:
+    data = json.load(f)
+
+# Iterate through each item and convert times
+for item in data:
+    # Parse the UTC times
+    start_time_str = item["Start Time"]
+    end_time_str = item["End Time"]
+
+    # Determine the format
+    start_fmt = get_datetime_format(start_time_str)
+    end_fmt = get_datetime_format(end_time_str)
+
+    # Parse the datetime strings
+    start_time_utc = parse(start_time_str)
+    end_time_utc = parse(end_time_str)
+
+    # Convert to CST
+    start_time_cst = start_time_utc.astimezone(cst)
+    end_time_cst = end_time_utc.astimezone(cst)
+
+    # Format back to the original format
+    if start_fmt == "%Y-%m-%dT%H:%M:%S.%fZ":
+        start_time_cst_str = start_time_cst.strftime("%Y-%m-%dT%H:%M:%S.%f")[
+            :-3
+        ] + start_time_cst.strftime("%z")
+        start_time_cst_str = start_time_cst_str[:-2] + ":" + start_time_cst_str[-2:]
+    elif start_fmt == "%Y-%m-%dT%H:%M:%S.Z":
+        start_time_cst_str = start_time_cst.strftime("%Y-%m-%dT%H:%M:%S%z")
+        start_time_cst_str = start_time_cst_str[:-2] + ":" + start_time_cst_str[-2:]
+    elif start_fmt == "%a, %d %b %Y %H:%M:%S %z":
+        start_time_cst_str = start_time_cst.strftime("%a, %d %b %Y %H:%M:%S %z")
+    else:
+        raise ValueError(f"Unknown format: {start_fmt}")
+
+    if end_fmt == "%Y-%m-%dT%H:%M:%S.%fZ":
+        end_time_cst_str = end_time_cst.strftime("%Y-%m-%dT%H:%M:%S.%f")[
+            :-3
+        ] + end_time_cst.strftime("%z")
+        end_time_cst_str = end_time_cst_str[:-2] + ":" + end_time_cst_str[-2:]
+    elif end_fmt == "%Y-%m-%dT%H:%M:%S.Z":
+        end_time_cst_str = end_time_cst.strftime("%Y-%m-%dT%H:%M:%S%z")
+        end_time_cst_str = end_time_cst_str[:-2] + ":" + end_time_cst_str[-2:]
+    elif end_fmt == "%a, %d %b %Y %H:%M:%S %z":
+        end_time_cst_str = end_time_cst.strftime("%a, %d %b %Y %H:%M:%S %z")
+    else:
+        raise ValueError(f"Unknown format: {end_fmt}")
+
+    # Update the item with CST times
+    item["Start Time"] = start_time_cst_str
+    item["End Time"] = end_time_cst_str
+
+# Write the updated data back to the JSON file
+with open("data/reference/phone_details.json", "w") as f:
+    json.dump(data, f, indent=4)
+
+
+# ---------------------
+# filter_json_by_date
+from datetime import datetime, timedelta
+import json
+from typing import List, Dict, Any
+from pytz import timezone
+import os
+
+
+def filter_json_by_date(
+    data: List[Dict[Any, Any]], target_date: str = None
+) -> List[Dict[Any, Any]]:
+
+    # Use today's date in CST timezone if no target date provided
+    if target_date is None:
+        cst = timezone("US/Central")
+        target_date = (datetime.now(cst) - timedelta(days=1)).strftime("%Y-%m-%d")
+
+    # Validate target date format
+    try:
+        datetime.strptime(target_date, "%Y-%m-%d")
+    except ValueError:
+        raise ValueError("target_date must be in YYYY-MM-DD format")
+
+    # Filter items using "Start Time" key
+    filtered_data = []
+    for item in data:
+        start_time_str = item.get("Start Time")
+        if start_time_str:
+            try:
+                # Parse the Start Time string
+                start_time = datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M:%S.%f%z")
+                # Extract the date part
+                item_date = start_time.strftime("%Y-%m-%d")
+                if item_date == target_date:
+                    filtered_data.append(item)
+            except ValueError:
+                # Skip items with invalid date formats
+                continue
+        else:
+            # Skip items without "Start Time" key
+            continue
+
+    return filtered_data
+
+
+# Read the JSON data from file
+with open("data/reference/phone_details.json", "r") as f:
+    data = json.load(f)
+
+# Filter the data
+filtered_data = filter_json_by_date(data)
+
+# Write the filtered data to a new JSON file
+with open(f"data/reference/phone_details.json", "w") as f:
+    json.dump(filtered_data, f, indent=4)
+
+
+# finally delete all the files in the call_logs folder
+import os
+import shutil
+
+call_logs_dir = "data/call_logs"
+for filename in os.listdir(call_logs_dir):
+    file_path = os.path.join(call_logs_dir, filename)
+    try:
+        if os.path.isfile(file_path) or os.path.islink(file_path):
+            os.unlink(file_path)
+        elif os.path.isdir(file_path):
+            shutil.rmtree(file_path)
+            print("Deleted %s" % file_path)
+    except Exception as e:
+        print("Failed to delete %s. Reason: %s" % (file_path, e))

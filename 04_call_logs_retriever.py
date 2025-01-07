@@ -52,7 +52,7 @@ def convert_json(data):
             "To": to_number,
             "Start Time": start_time,
             "End Time": end_time,
-            "Transcript": transcriptions
+            "Transcript": transcriptions,
         }
         converted_data.append(converted_call)
 
@@ -96,5 +96,4 @@ for item in second_data:
 with open("data/reference/phone_details.json", "w") as f:
     json.dump(second_data, f, indent=4)
 
-# Optional: Print the modified data
-print(json.dumps(second_data, indent=4))
+
