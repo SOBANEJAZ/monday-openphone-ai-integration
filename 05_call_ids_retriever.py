@@ -17,8 +17,7 @@ dir = "data/reference/phone_details.json"
 
 with open(dir, "r") as f:
     phone_details = json.load(f)
-for item in phone_details:
-    filename = item["Board_id"]
+for filename, item in enumerate(phone_details):
     if len(item) == 9:
         if item["Direction"] == "incoming":
             params = {
@@ -27,11 +26,13 @@ for item in phone_details:
             }
             response = requests.get("https://api.openphone.com/v1/calls", params=params, headers=headers).json()
 
-            with open(f"data/call_logs/{filename}", "a") as f:
+            with open(f"data/call_logs/{filename}.json", "w") as f:
                 f.write(json.dumps(response, indent=2))
 
 
 response = requests.get("https://api.openphone.com/v1/calls", params=params, headers=headers).json()
 
-with open("responses.json", "w") as f:
-    f.write(json.dumps(response, indent=2))
+
+with open(dir, "w") as f:
+    f.write(json.dumps(phone_details, indent=4))
+

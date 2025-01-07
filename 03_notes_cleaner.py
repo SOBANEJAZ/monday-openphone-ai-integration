@@ -185,6 +185,7 @@ def filter_json_by_date(
     # Use today's date in CST timezone if no target date provided
     if target_date is None:
         cst = timezone('US/Central')
+        # target_date = (datetime.now(cst).strftime("%Y-%m-%d"))
         target_date = (datetime.now(cst) - timedelta(days=1)).strftime("%Y-%m-%d")
 
     # Validate target date format
