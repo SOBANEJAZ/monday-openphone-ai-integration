@@ -61,13 +61,40 @@ def convert_json(data):
 
 converted_data = convert_json(table)
 # Load additional JSON data
-with open("initial_data/init.json", "r") as f:
+with open("data/reference/init.json", "r") as f:
     boards = json.load(f)
 
-with open("initial_data/phone_details.json", "w") as f:
+with open("data/reference/phone_details.json", "w") as f:
     for call in converted_data:
         for board in boards:
             if call["To"] == board["number"] or call["From"] == board["number"]:
                 call["Board_id"] = board["Board_id"]
                 call["Staff Member"] = board["Staff Member"]
-    json.dump(converted_data, f, indent=4)            
+    json.dump(converted_data, f, indent=4)
+
+
+import json
+
+# Load the first JSON file
+with open("data/reference/init.json", "r") as f:
+    first_data = json.load(f)
+
+# Load the second JSON file
+with open("data/reference/phone_details.json", "r") as f:
+    second_data = json.load(f)
+
+# Create a mapping from "number" to "id"
+number_to_id = {item["number"]: item["id"] for item in first_data}
+
+# Iterate through each item in the second JSON and add "id" if "To" matches
+for item in second_data:
+    to_number = item.get("To", "")
+    if to_number in number_to_id:
+        item["id"] = number_to_id[to_number]
+
+# Save the modified second JSON to a new file
+with open("data/reference/phone_details.json", "w") as f:
+    json.dump(second_data, f, indent=4)
+
+# Optional: Print the modified data
+print(json.dumps(second_data, indent=4))
