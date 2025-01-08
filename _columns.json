@@ -1,0 +1,83 @@
+{
+    "data": {
+        "boards": [
+            {
+                "columns": [
+                    {
+                        "id": "name",
+                        "title": "Name"
+                    },
+                    {
+                        "id": "date_16",
+                        "title": "Date"
+                    },
+                    {
+                        "id": "text_mkksdc0h",
+                        "title": "Client Name"
+                    },
+                    {
+                        "id": "date_13",
+                        "title": "Start Time"
+                    },
+                    {
+                        "id": "date_19",
+                        "title": "End Time"
+                    },
+                    {
+                        "id": "formula",
+                        "title": "Auto Units"
+                    },
+                    {
+                        "id": "numbers1",
+                        "title": "Manual units"
+                    },
+                    {
+                        "id": "date_1_mkkv8zar",
+                        "title": "Note Update Time"
+                    },
+                    {
+                        "id": "status80",
+                        "title": "Service Type"
+                    },
+                    {
+                        "id": "status4",
+                        "title": "Provided As"
+                    },
+                    {
+                        "id": "label",
+                        "title": "Service Line"
+                    },
+                    {
+                        "id": "case_note_updates_mkksjw27",
+                        "title": "Case Note Updates"
+                    },
+                    {
+                        "id": "session_status_mkks4rdb",
+                        "title": "Call Log Matched"
+                    },
+                    {
+                        "id": "subitems",
+                        "title": "Subitems"
+                    },
+                    {
+                        "id": "severity_flags_mkks6sc7",
+                        "title": "Severity Flags"
+                    },
+                    {
+                        "id": "long_text_mkksj5e8",
+                        "title": "Issue Description"
+                    },
+                    {
+                        "id": "status_mkksdpe5",
+                        "title": "QA Status"
+                    },
+                    {
+                        "id": "link_mkks5z9k",
+                        "title": "Link to Original Session"
+                    }
+                ]
+            }
+        ]
+    },
+    "account_id": 16452009
+}
