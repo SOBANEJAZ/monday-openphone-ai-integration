@@ -8,14 +8,6 @@
                         "title": "Name"
                     },
                     {
-                        "id": "date_16",
-                        "title": "Date"
-                    },
-                    {
-                        "id": "text_mkksdc0h",
-                        "title": "Client Name"
-                    },
-                    {
                         "id": "date_13",
                         "title": "Start Time"
                     },
@@ -32,10 +24,6 @@
                         "title": "Manual units"
                     },
                     {
-                        "id": "date_1_mkkv8zar",
-                        "title": "Note Update Time"
-                    },
-                    {
                         "id": "status80",
                         "title": "Service Type"
                     },
@@ -48,14 +36,6 @@
                         "title": "Service Line"
                     },
                     {
-                        "id": "case_note_updates_mkksjw27",
-                        "title": "Case Note Updates"
-                    },
-                    {
-                        "id": "session_status_mkks4rdb",
-                        "title": "Call Log Matched"
-                    },
-                    {
                         "id": "subitems",
                         "title": "Subitems"
                     },
@@ -64,16 +44,20 @@
                         "title": "Severity Flags"
                     },
                     {
-                        "id": "long_text_mkksj5e8",
-                        "title": "Issue Description"
+                        "id": "issue_description_mkm0j7qm",
+                        "title": "AI Report"
                     },
                     {
                         "id": "status_mkksdpe5",
                         "title": "QA Status"
                     },
                     {
-                        "id": "link_mkks5z9k",
-                        "title": "Link to Original Session"
+                        "id": "original_note_mkm0z2v3",
+                        "title": "Original Note"
+                    },
+                    {
+                        "id": "link_to_original_note_mkm09qb0",
+                        "title": "Link to Original Note"
                     }
                 ]
             }
