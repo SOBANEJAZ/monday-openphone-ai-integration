@@ -22,15 +22,30 @@ class DataProcessor:
         )
 
         # Get other values
-        manual_units = column_values.get("Manual units", {}).get("value")
+        manual_units = column_values.get("Manual units", {}).get("value") or column_values.get("Units", {}).get("value")
         auto_units = column_values.get("Auto Units", {}).get("value")
         service_type = self._get_label(column_values.get("Service Type", {}))
         provided_as = self._get_label(column_values.get("Provided As", {}))
         service_line = self._get_label(column_values.get("Service Line", {}))
 
+        # "updates": [
+        #     {
+        #       "id": "3728016534",
+        #       "text_body": "The Housing Coordinator (HC) contacted the client today to introduce himself and begin completing the Intake form. The client responded to the call and was greeted warmly as the HC explained his role and the purpose of the process. The HC guided the client through the questionnaire, ensuring she felt at ease and supported throughout. The client answered each question thoroughly, allowing the HC to finalize the form efficiently. Once completed, the HC informed the client that the form would be submitted to a team member who would reach out to her shortly. He expressed his gratitude for her cooperation and reassured her of his availability for further assistance if needed.",
+        #       "created_at": "2024-12-27T23:36:15.000Z",
+        #       "updated_at": "2024-12-27T23:36:15.000Z"
+        #     },
+        #     {
+        #       "id": "3728016098",
+        #       "text_body": "",
+        #       "created_at": "2024-12-27T23:35:37.000Z",
+        #       "updated_at": "2024-12-27T23:35:37.000Z"
+        #     }
+        #   ],
+
         # Get updates
         updates = item.get("updates", [])
-        update_text = updates[0].get("text_body") if updates else None
+        update_text = updates[-1].get("text_body") if updates else None
 
         return {
             "item_name": item.get("name"),
