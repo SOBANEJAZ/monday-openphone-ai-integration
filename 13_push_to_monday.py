@@ -23,7 +23,7 @@ PROVIDED_AS_MAP = {
     "Direct/In-Person": "2",
 }
 
-SEVERITY_MAP = {"High": "0", "Medium": "1", "Low": "2"}
+SEVERITY_MAP = {"high": "0", "medium": "1", "low": "2", "good note": "3"}
 
 
 def update_column_value(item_id, board_id, column_id, value):

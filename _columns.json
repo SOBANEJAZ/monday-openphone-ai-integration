@@ -32,10 +32,6 @@
                         "title": "Provided As"
                     },
                     {
-                        "id": "label",
-                        "title": "Service Line"
-                    },
-                    {
                         "id": "subitems",
                         "title": "Subitems"
                     },

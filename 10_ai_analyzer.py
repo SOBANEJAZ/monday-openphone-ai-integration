@@ -103,7 +103,7 @@ for filename in json_files:
        - Explain your reasoning comprehensively for each assessment.
 
     Make sure to evaluate each note thoroughly, providing a severity level and an explanatory reason for every single note.
-
+    Make sure that the reasoning is clear and and fully detailed around 3 lines or more.
     **Session Notes**: {data['notes']}
     **Call Transcripts**: {data['call_transcripts']}
     """
