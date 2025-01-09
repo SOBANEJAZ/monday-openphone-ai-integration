@@ -3,7 +3,7 @@ import os
 
 scripts = [
     "01_reference_collecter.py",
-    "02_notes_retriever.py",
+    "02.py",
     "03_notes_cleaner.py",
     "04_call_logs_retriever.py",
     "05_call_ids_retriever.py",
@@ -14,7 +14,7 @@ scripts = [
     "10_ai_analyzer.py",
     "11_CST_to_UTC.py",
     "12_groups_columns_fetcher.py",
-    "13_push_to_monday.py",
+    "13.py",
 ]
 
 script_dir = os.getcwd()  # Current working directory

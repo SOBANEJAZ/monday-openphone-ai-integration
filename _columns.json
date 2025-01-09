@@ -8,6 +8,22 @@
                         "title": "Name"
                     },
                     {
+                        "id": "dup__of_severity_flags_mkm19yh",
+                        "title": "Start Time VS Session Created"
+                    },
+                    {
+                        "id": "text_mkm1vk1y",
+                        "title": "Starting AI Analysis"
+                    },
+                    {
+                        "id": "status_mkm1fy0n",
+                        "title": "End Time VS Update Created"
+                    },
+                    {
+                        "id": "text_mkm1d8wd",
+                        "title": "Ending AI Analysis"
+                    },
+                    {
                         "id": "date_13",
                         "title": "Start Time"
                     },
@@ -37,15 +53,11 @@
                     },
                     {
                         "id": "severity_flags_mkks6sc7",
-                        "title": "Severity Flags"
+                        "title": "Call Log, Transcript VS Session Update"
                     },
                     {
                         "id": "issue_description_mkm0j7qm",
-                        "title": "AI Report"
-                    },
-                    {
-                        "id": "status_mkksdpe5",
-                        "title": "QA Status"
+                        "title": "Call Log AI analysis"
                     },
                     {
                         "id": "original_note_mkm0z2v3",

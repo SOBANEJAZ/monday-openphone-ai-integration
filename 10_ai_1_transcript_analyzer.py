@@ -113,8 +113,8 @@ for filename in json_files:
 
     # Update the data with analysis results
     for i, note_analysis in enumerate(analysis["notes_analysis"]):
-        data["notes"][i]["severity"] = note_analysis["severity"]
-        data["notes"][i]["reason"] = note_analysis["reason"]
+        data["notes"][i]["transcript_severity"] = note_analysis["severity"]
+        data["notes"][i]["transcript_reason"] = note_analysis["reason"]
 
     # Construct output file path
     output_file_path = os.path.join(output_folder, filename)

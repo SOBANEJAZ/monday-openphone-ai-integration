@@ -22,7 +22,7 @@ if not os.path.exists("final"):
     os.makedirs("final")
 
 # Specify the input directory
-input_dir = "AI Revised/"
+input_dir = "AI Revised 2/"
 
 # Get list of files in the input directory
 file_list = os.listdir(input_dir)

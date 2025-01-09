@@ -1,9 +1,12 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 from typing import Dict, List, Optional
 import os
 from typing import Any
 from pytz import timezone
+import pytz
+from pathlib import Path
+
 
 class DataProcessor:
     def __init__(self, json_data: Dict):
@@ -24,34 +27,24 @@ class DataProcessor:
         )
 
         # Get other values
-        manual_units = column_values.get("Manual units", {}).get("value") or column_values.get("Units", {}).get("value")
+        manual_units = column_values.get("Manual units", {}).get(
+            "value"
+        ) or column_values.get("Units", {}).get("value")
         auto_units = column_values.get("Auto Units", {}).get("value")
         service_type = self._get_label(column_values.get("Service Type", {}))
         provided_as = self._get_label(column_values.get("Provided As", {}))
         service_line = self._get_label(column_values.get("Service Line", {}))
 
-        # "updates": [
-        #     {
-        #       "id": "3728016534",
-        #       "text_body": "The Housing Coordinator (HC) contacted the client today to introduce himself and begin completing the Intake form. The client responded to the call and was greeted warmly as the HC explained his role and the purpose of the process. The HC guided the client through the questionnaire, ensuring she felt at ease and supported throughout. The client answered each question thoroughly, allowing the HC to finalize the form efficiently. Once completed, the HC informed the client that the form would be submitted to a team member who would reach out to her shortly. He expressed his gratitude for her cooperation and reassured her of his availability for further assistance if needed.",
-        #       "created_at": "2024-12-27T23:36:15.000Z",
-        #       "updated_at": "2024-12-27T23:36:15.000Z"
-        #     },
-        #     {
-        #       "id": "3728016098",
-        #       "text_body": "",
-        #       "created_at": "2024-12-27T23:35:37.000Z",
-        #       "updated_at": "2024-12-27T23:35:37.000Z"
-        #     }
-        #   ],
-
         # Get updates
         updates = item.get("updates", [])
         update_text = updates[-1].get("text_body") if updates else None
+        update_creation_time = updates[-1].get("created_at") if updates else None
 
         return {
             "item_name": item.get("name"),
             "item_id": item.get("id"),
+            "session_creation_time": item.get("created_at"),
+            "update_creation_time": update_creation_time,
             "date": date,
             "start_time": start_time,
             "end_time": end_time,
@@ -103,35 +96,14 @@ class DataProcessor:
         return result
 
 
-# Example usage
 def process_json_data(json_data: Dict) -> List[Dict]:
+    """Process the JSON data using DataProcessor."""
     processor = DataProcessor(json_data)
     return processor.process()
 
 
-# Load JSON data
-
-dir = "data/notes/raw_notes/"
-for filename in os.listdir(dir):
-    with open(os.path.join(dir, filename), "r") as f:
-        json_data = json.load(f)
-
-    output = process_json_data(json_data)
-
-    output_filename = f"data/notes/cleaned_notes/{filename}"
-    with open(output_filename, "w") as f:
-        json.dump(output, f, indent=4)
-
-
-# ----------------------------------
-# to change the timezone from
-import json
-import pytz
-import os
-from pathlib import Path
-
-
 def convert_utc_to_cst(input_file):
+    """Convert timestamps from UTC to CST."""
     with open(input_file, "r") as f:
         data = json.load(f)
 
@@ -139,20 +111,63 @@ def convert_utc_to_cst(input_file):
     cst_tz = pytz.timezone("America/Chicago")
 
     for item in data:
+        # Handle session creation time
+        if item["session_creation_time"]:
+            try:
+                # Parse the UTC timestamp
+                session_dt = datetime.strptime(
+                    item["session_creation_time"],
+                    "%Y-%m-%dT%H:%M:%SZ",  # Format for UTC ISO timestamps
+                )
+                session_dt = utc_tz.localize(session_dt)
+                session_cst = session_dt.astimezone(cst_tz)
+                item["session_creation_time"] = session_cst.strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
+            except ValueError:
+                print(
+                    f"Error converting session_creation_time: {item['session_creation_time']}"
+                )
+
+        # Handle update creation time
+        if item["update_creation_time"]:
+            try:
+                # Parse the UTC timestamp with milliseconds
+                update_dt = datetime.strptime(
+                    item["update_creation_time"].split(".")[0], "%Y-%m-%dT%H:%M:%S"
+                )
+                update_dt = utc_tz.localize(update_dt)
+                update_cst = update_dt.astimezone(cst_tz)
+                item["update_creation_time"] = update_cst.strftime("%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                print(
+                    f"Error converting update_creation_time: {item['update_creation_time']}"
+                )
+
+        # Handle date and times
         if item["date"] and item["start_time"]:
-            start_dt_str = f"{item['date']} {item['start_time']}"
-            start_dt = datetime.strptime(start_dt_str, "%Y-%m-%d %H:%M:%S")
-            start_dt = utc_tz.localize(start_dt)
-            start_cst = start_dt.astimezone(cst_tz)
-            item["date"] = start_cst.strftime("%Y-%m-%d")
-            item["start_time"] = start_cst.strftime("%H:%M:%S")
+            try:
+                # Combine date and time
+                start_dt_str = f"{item['date']} {item['start_time']}"
+                start_dt = datetime.strptime(start_dt_str, "%Y-%m-%d %H:%M:%S")
+                start_dt = utc_tz.localize(start_dt)
+                start_cst = start_dt.astimezone(cst_tz)
+
+                # Update both date and time
+                item["date"] = start_cst.strftime("%Y-%m-%d")
+                item["start_time"] = start_cst.strftime("%H:%M:%S")
+            except ValueError:
+                print(f"Error converting start time: {start_dt_str}")
 
         if item["date"] and item["end_time"]:
-            end_dt_str = f"{item['date']} {item['end_time']}"
-            end_dt = datetime.strptime(end_dt_str, "%Y-%m-%d %H:%M:%S")
-            end_dt = utc_tz.localize(end_dt)
-            end_cst = end_dt.astimezone(cst_tz)
-            item["end_time"] = end_cst.strftime("%H:%M:%S")
+            try:
+                end_dt_str = f"{item['date']} {item['end_time']}"
+                end_dt = datetime.strptime(end_dt_str, "%Y-%m-%d %H:%M:%S")
+                end_dt = utc_tz.localize(end_dt)
+                end_cst = end_dt.astimezone(cst_tz)
+                item["end_time"] = end_cst.strftime("%H:%M:%S")
+            except ValueError:
+                print(f"Error converting end time: {end_dt_str}")
 
     output_file = input_file
     with open(output_file, "w") as f:
@@ -162,38 +177,25 @@ def convert_utc_to_cst(input_file):
 
 
 def process_directory(directory_path):
+    """Process all JSON files in a directory."""
     directory = Path(directory_path)
     processed_files = []
 
     for file_path in directory.glob("*.json"):
-        if not file_path.name.endswith("_CST.json"):  # Skip already processed files
-            try:
-                output_file = convert_utc_to_cst(file_path)
-                processed_files.append(output_file)
-                print(f"Processed: {file_path.name} -> {Path(output_file).name}")
-            except Exception as e:
-                print(f"Error processing {file_path.name}: {str(e)}")
+        try:
+            output_file = convert_utc_to_cst(file_path)
+            processed_files.append(output_file)
+            print(f"Processed: {file_path.name} -> {Path(output_file).name}")
+        except Exception as e:
+            print(f"Error processing {file_path.name}: {str(e)}")
 
     return processed_files
 
 
-# Usage
-directory_path = "data/notes/cleaned_notes"  # Replace with your folder path
-processed_files = process_directory(directory_path)
-print(f"\nTotal files processed: {len(processed_files)}")
-
-
-# -------------------------------------
-#  to filter the notes by today date
-
-
-
-
 def filter_json_by_date(data, target_date=None):
-
-    # Use today's date in CST timezone if no target date provided
+    """Filter JSON data by date, defaulting to yesterday in CST."""
     if target_date is None:
-        cst = timezone('US/Central')
+        cst = timezone("US/Central")
         target_date = (datetime.now(cst).strftime("%Y-%m-%d"))
         # target_date = (datetime.now(cst) - timedelta(days=1)).strftime("%Y-%m-%d")
 
@@ -205,16 +207,34 @@ def filter_json_by_date(data, target_date=None):
 
     # Filter items
     filtered_data = [item for item in data if item.get("date") == target_date]
-
     return filtered_data
 
-# Example usage
-dir = "data/notes/cleaned_notes/"
-for filename in os.listdir(dir):
-    with open(os.path.join(dir, filename), "r") as f:
-        data = json.load(f)
 
-    filtered_data = filter_json_by_date(data)
+# Main execution
+if __name__ == "__main__":
+    # Step 1: Process raw JSON files
+    raw_dir = "data/notes/raw_notes/"
+    for filename in os.listdir(raw_dir):
+        with open(os.path.join(raw_dir, filename), "r") as f:
+            json_data = json.load(f)
 
-    with open(f"data/notes/filtered_notes/{filename}", "w") as f:
-        json.dump(filtered_data, f, indent=4)
+        output = process_json_data(json_data)
+        output_filename = f"data/notes/cleaned_notes/{filename}"
+        with open(output_filename, "w") as f:
+            json.dump(output, f, indent=4)
+
+    # Step 2: Convert timezones
+    cleaned_dir = "data/notes/cleaned_notes"
+    processed_files = process_directory(cleaned_dir)
+    print(f"\nTotal files processed for timezone conversion: {len(processed_files)}")
+
+    # Step 3: Filter by date
+    filtered_dir = "data/notes/filtered_notes/"
+    for filename in os.listdir(cleaned_dir):
+        with open(os.path.join(cleaned_dir, filename), "r") as f:
+            data = json.load(f)
+
+        filtered_data = filter_json_by_date(data)
+
+        with open(os.path.join(filtered_dir, filename), "w") as f:
+            json.dump(filtered_data, f, indent=4)
