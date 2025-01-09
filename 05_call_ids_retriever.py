@@ -32,6 +32,7 @@ for filename, item in enumerate(phone_details):
 
 
 
+
 with open(dir, "w") as f:
     f.write(json.dumps(phone_details, indent=4))
 

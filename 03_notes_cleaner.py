@@ -2,6 +2,8 @@ from datetime import datetime
 import json
 from typing import Dict, List, Optional
 import os
+from typing import Any
+from pytz import timezone
 
 class DataProcessor:
     def __init__(self, json_data: Dict):
@@ -124,7 +126,6 @@ for filename in os.listdir(dir):
 # ----------------------------------
 # to change the timezone from
 import json
-from datetime import datetime
 import pytz
 import os
 from pathlib import Path
@@ -185,12 +186,7 @@ print(f"\nTotal files processed: {len(processed_files)}")
 # -------------------------------------
 #  to filter the notes by today date
 
-from datetime import datetime, timedelta
-import json
-from typing import List, Dict, Any
-from pytz import timezone
-import os
-import json
+
 
 
 def filter_json_by_date(data, target_date=None):
@@ -211,7 +207,6 @@ def filter_json_by_date(data, target_date=None):
     filtered_data = [item for item in data if item.get("date") == target_date]
 
     return filtered_data
-
 
 # Example usage
 dir = "data/notes/cleaned_notes/"

@@ -11,7 +11,7 @@ scripts = [
     "07_call_transcript_retriever.py",
     "08_call_transcript_cleaner.py",
     "09_calls_notes_combiner.py",
-    "10_a1_analyzer.py",
+    "10_ai_analyzer.py",
     "11_CST_to_UTC.py",
     "12_groups_columns_fetcher.py",
     "13_push_to_monday.py",
@@ -31,4 +31,3 @@ for script in scripts:
         print(f"Completed {script}.\n")
     except subprocess.CalledProcessError as e:
         print(f"Error running {script}: {e}\n")
-

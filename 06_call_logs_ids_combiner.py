@@ -1,7 +1,9 @@
 import json
 import os
 from datetime import datetime
-import glob
+import json
+from typing import List, Dict, Any
+from pytz import timezone
 
 
 def process_json_files(main_json_path, call_logs_dir):
@@ -45,7 +47,6 @@ def process_json_files(main_json_path, call_logs_dir):
 process_json_files("data/reference/phone_details.json", "data/call_logs")
 
 
-import json
 
 
 def filter_items(data):
@@ -73,7 +74,6 @@ with open("data/reference/phone_details.json", "w") as f:
 
 
 import json
-from datetime import datetime
 from dateutil.parser import parse
 import pytz
 
@@ -157,21 +157,15 @@ with open("data/reference/phone_details.json", "w") as f:
 
 # ---------------------
 # filter_json_by_date
-from datetime import datetime, timedelta
-import json
-from typing import List, Dict, Any
-from pytz import timezone
-import os
 
+# def filter_json_by_date(data: List[Dict[Any, Any]], target_date: str = None) -> List[Dict[Any, Any]]:
 
-def filter_json_by_date(
-    data: List[Dict[Any, Any]], target_date: str = None
-) -> List[Dict[Any, Any]]:
+def filter_json_by_date(data, target_date=None):
 
     # Use today's date in CST timezone if no target date provided
     if target_date is None:
         cst = timezone("US/Central")
-        target_date = datetime.now(cst).strftime("%Y-%m-%d")
+        target_date = (datetime.now(cst).strftime("%Y-%m-%d"))
         # target_date = (datetime.now(cst) - timedelta(days=1)).strftime("%Y-%m-%d")
 
     # Validate target date format
@@ -210,12 +204,11 @@ with open("data/reference/phone_details.json", "r") as f:
 filtered_data = filter_json_by_date(data)
 
 # Write the filtered data to a new JSON file
-with open(f"data/reference/phone_details.json", "w") as f:
+with open("data/reference/phone_details.json", "w") as f:
     json.dump(filtered_data, f, indent=4)
 
 
 # finally delete all the files in the call_logs folder
-import os
 import shutil
 
 call_logs_dir = "data/call_logs"

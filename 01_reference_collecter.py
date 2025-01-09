@@ -293,7 +293,7 @@ for board in boards:
         merged_data = merge_responses(monday_data, updates_data)
 
         print("Saving merged data...")
-        with open(f"data.json", "w") as f:
+        with open("data.json", "w") as f:
             json.dump(merged_data, f, indent=2)
 
         print("Successfully created merged data file")
@@ -371,7 +371,6 @@ print("Initial data is ready for use.")
 # ---------------------
 
 
-import requests
 from dotenv import load_dotenv
 import os
 import json
