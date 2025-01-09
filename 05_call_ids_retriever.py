@@ -30,7 +30,6 @@ for filename, item in enumerate(phone_details):
                 f.write(json.dumps(response, indent=2))
 
 
-response = requests.get("https://api.openphone.com/v1/calls", params=params, headers=headers).json()
 
 
 with open(dir, "w") as f:

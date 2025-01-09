@@ -193,15 +193,13 @@ import os
 import json
 
 
-def filter_json_by_date(
-    data: List[Dict[Any, Any]], target_date: str = None
-) -> List[Dict[Any, Any]]:
+def filter_json_by_date(data, target_date=None):
 
     # Use today's date in CST timezone if no target date provided
     if target_date is None:
         cst = timezone('US/Central')
-        # target_date = (datetime.now(cst).strftime("%Y-%m-%d"))
-        target_date = (datetime.now(cst) - timedelta(days=1)).strftime("%Y-%m-%d")
+        target_date = (datetime.now(cst).strftime("%Y-%m-%d"))
+        # target_date = (datetime.now(cst) - timedelta(days=1)).strftime("%Y-%m-%d")
 
     # Validate target date format
     try:
@@ -213,6 +211,7 @@ def filter_json_by_date(
     filtered_data = [item for item in data if item.get("date") == target_date]
 
     return filtered_data
+
 
 # Example usage
 dir = "data/notes/cleaned_notes/"
