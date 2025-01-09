@@ -1,0 +1,6 @@
+openai==1.59.5
+pyairtable==3.0.1
+python-dotenv==1.0.1
+python_dateutil==2.9.0.post0
+pytz==2024.2
+Requests==2.32.3
