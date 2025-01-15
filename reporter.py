@@ -18,7 +18,7 @@ for item in init_data:
     data.append(item["Board_id"])
 boards = [int(item) for item in data]
 
-b = [8139951792]
+b = [5831486789]
 for board in b:
     print(f"Fetching data for board {board}...")
     load_dotenv()
@@ -191,12 +191,14 @@ for board in b:
                     column_values {
                         column {
                             title
+                            updated_at
                         }
                         value
                         type
                         ... on StatusValue {
                             label
                             update_id
+                            updated_at
                         }
                     }
                 }
