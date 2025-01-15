@@ -3,7 +3,6 @@ import os
 
 scripts = [
     "01_reference_collecter.py",
-    "02.py",
     "03_notes_cleaner.py",
     "04_call_logs_retriever.py",
     "05_call_ids_retriever.py",

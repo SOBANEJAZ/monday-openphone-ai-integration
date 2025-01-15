@@ -2,19 +2,18 @@ import json
 import requests
 import os
 from dotenv import load_dotenv
-from pyairtable import Api
+from pyairtable import Api, Table, api
+from datetime import datetime, timedelta
 
 load_dotenv()
 
 # Initialize the Airtable API
 api = Api(os.getenv("AIRTABLE_API_KEY"))
+
 table = api.table("appYvU5Req8gKzr7A", "tblUjWsTBe299fVF9")
 
 # Get all the records from the Airtable
 table = table.all()
-
-import json
-from datetime import datetime
 
 
 def convert_json(data):
@@ -27,22 +26,6 @@ def convert_json(data):
         transcriptions = call["fields"].get("Transcript")
         start_time = call["fields"].get("Start Time")
         end_time = call["fields"].get("End Time")
-
-        # if start_time:
-        #     start_time = datetime.strptime(
-        #         start_time, "%Y-%m-%dT%H:%M:%S.%fZ"
-        #     ).strftime("%H:%M:%S")
-        # else:
-        #     start_time = None
-
-        # if "T" in end_time:
-        #     end_time = datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%S.%fZ").strftime(
-        #         "%H:%M:%S"
-        #     )
-        # else:
-        #     end_time = datetime.strptime(end_time, "%a, %d %b %Y %H:%M:%S %z").strftime(
-        #         "%H:%M:%S"
-        #     )
 
         converted_call = {
             "Direction": direction,
@@ -73,7 +56,6 @@ with open("data/reference/phone_details.json", "w") as f:
     json.dump(converted_data, f, indent=4)
 
 
-import json
 
 # Load the first JSON file
 with open("data/reference/init.json", "r") as f:

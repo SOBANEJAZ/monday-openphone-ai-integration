@@ -3,6 +3,7 @@ import json
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+import time
 
 load_dotenv()
 OPEN_AI_API = os.getenv("OPEN_AI_API")
@@ -13,43 +14,36 @@ client = OpenAI(api_key=OPEN_AI_API)
 def analyze_issue(description):
     try:
         response = client.chat.completions.create(
-            model="gpt-4-1106-preview",  # Updated to the latest available model
+            model="gpt-4o-2024-11-20",  # Updated to the latest available model
             messages=[{"role": "user", "content": f"{description}"}],
             functions=[
                 {
                     "name": "issue_analysis",
-                    "description": "Analyze severity and reason for each note based on transcripts",
+                    "description": "Analyze severity and reason for each note based on Session Update Time and End Time.",
                     "parameters": {
                         "type": "object",
                         "properties": {
-                            "notes_analysis": {
+                            "time_analysis": {
                                 "type": "array",
                                 "items": {
                                     "type": "object",
                                     "properties": {
                                         "note_index": {"type": "integer"},
-                                        "start_severity": {
-                                            "type": "string",
-                                            "enum": ["Start Flagged", "Start Good"],
-                                        },
                                         "end_severity": {
                                             "type": "string",
-                                            "enum": ["End Flagged", "End Good"],
+                                            "enum": ["Good", "Flagged"],
                                         },
-                                        "start_reason": {"type": "string"},
                                         "end_reason": {"type": "string"},
                                     },
                                     "required": [
                                         "note_index",
-                                        "start_severity",
                                         "end_severity",
-                                        "start_reason",
                                         "end_reason",
                                     ],
                                 },
                             },
                         },
-                        "required": ["notes_analysis"],
+                        "required": ["time_analysis"],
                     },
                 }
             ],
@@ -63,15 +57,13 @@ def analyze_issue(description):
         result = json.loads(response.choices[0].message.function_call.arguments)
 
         # Validate the result structure
-        if "notes_analysis" not in result:
-            raise ValueError("Missing notes_analysis in API response")
+        if "time_analysis" not in result:
+            raise ValueError("Missing time_analysis in API response")
 
-        for note in result["notes_analysis"]:
+        for note in result["time_analysis"]:
             required_fields = [
                 "note_index",
-                "start_severity",
                 "end_severity",
-                "start_reason",
                 "end_reason",
             ]
             missing_fields = [field for field in required_fields if field not in note]
@@ -83,7 +75,7 @@ def analyze_issue(description):
     except Exception as e:
         print(f"Error in analyze_issue: {str(e)}")
         # Return a default structure in case of error
-        return {"notes_analysis": []}
+        return {"time_analysis": []}
 
 
 def process_files(input_folder, output_folder):
@@ -104,37 +96,32 @@ def process_files(input_folder, output_folder):
 
             # Prepare the description
             description = f"""
-            You are an **Employee Time Checker**. Your task is to evaluate the accuracy of employee times based on the following sequence:
-            - **Session Creation Time** -> **Start Time** -> **End Time** -> **Update Creation Time**.
+            You are an **Employee Time Checker**. Your task is to evaluate the accuracy of employee added times based on the following sequence:
+            First **Update Creation Time** and then **End Time**. Make sure that this sequence is followed, if not then mark the note as **Flagged**.  If the Update Creation Time is before the End Time, then output the note as **Good**.
 
             For each note in the **Session Notes**, you need to:
-            1. Assign a severity (Good or Flagged) to the Start and End times.
+            1. Assign an Index to each note, starting from zero.
+            1. Assign a severity (Good or Flagged) for each note.
             2. Provide a clear and detailed reason for your assessment based on the following criteria:
 
-            ### 1. **Start Time vs. Session Creation Time**:
-            - If the **Start Time** is more than 15 minutes before the **Session Creation Time**, mark it as **Flagged**.
-            - If the **Start Time** is within 15 minutes before or anytime after the **Session Creation Time**, mark it as **Good**.
-
             ### 2. **End Time vs. Update Creation Time**:
-            - If the **End Time** is before or within 15 minutes after the **Update Creation Time**, mark it as **Good**.
-            - If the **End Time** is more than 15 minutes after the **Update Creation Time**, mark it as **Flagged**.
+            - If the **Update Creation Time** is before or at the **End Time**, mark it as **Good**.
+            - If the **Update Creation Time** is after the **End Time**, mark it as **Flagged**.
+            - If the **End Time** is not provided, mark it as **Flagged**.
+            - Always use 12 Hour Time Format should be (e.g., 01:30 AM/PM).
+            - Always provide the time difference between **Update Creation Time** and **End Time** in the reason. The difference should be in format of **HH:MM**.
 
-
-            ### Example Start Reason:
-            - **Flagged Reason**: The **Start Time** was 31 minutes earlier than the **Session Creation Time**. The **Start Time** was 9:01 AM, and the **Session Creation Time** was 9:32 AM. Hence, the note is marked as Flagged due to the significant discrepancy.
-            - **Good Reason**: The **Start Time** was hours after the **Session Creation Time**. The **Start Time** was 10:01 AM, and the **Session Creation Time** was 9:01 AM. Because the **Start Time** was after the **Session Creation Time**, the note is marked as Good.
 
             ### Example End Reason:
-            - **Flagged Reason**: The **End Time** was 33 minutes after the **Update Creation Time**. The **End Time** was 10:02 AM, and the **Update Creation Time** was 10:35 AM. Hence, the note is marked as Flagged due to the significant discrepancy.
-            - **Good Reason**: The **End Time** was hours before the **Update Creation Time**. The **End Time** was 11:02 AM, and the **Update Creation Time** was 12:02 AM. Because the **End Time** was before the **Update Creation Time**, the note is marked as Good.
+            - **Good Reason**: The Update Creation Time was hours before the End Time. The Update Creation Time was 11:02 AM, and the **End Time** was 12:02 AM. Because the Update Creation Time was before the End Time, the note is marked as Good.
+            - **Flagged Reason**: The Update Creation Time was 33 minutes after the End Time. The End Time was 10:02 AM, and the Update Creation Time was 10:35 AM. Hence, the note is marked as Flagged due to the significant discrepancy.
 
             Use the 12-hour time format (e.g., 10:02 AM, 12:00 PM) in your responses.
+            Make sure you provide the correct severity and reason for each note and give each its index in the sequence(starting from zero).
 
             ### Value Map:
-            - **Session Creation Time** = "session_creation_time"
-            - **Start Time** = "start_time"
-            - **End Time** = "end_time"
             - **Update Creation Time** = "update_creation_time"
+            - **End Time** = "end_time"
 
             **Session Notes**: {data['notes']}
             """
@@ -143,17 +130,15 @@ def process_files(input_folder, output_folder):
             # Perform analysis
             analysis = analyze_issue(description)
 
-            if not analysis["notes_analysis"]:
+            if not analysis["time_analysis"]:
                 print(f"Warning: No analysis results for {filename}")
                 continue
 
             # Update the data with analysis results
-            for note_analysis in analysis["notes_analysis"]:
+            for note_analysis in analysis["time_analysis"]:
                 note_index = note_analysis["note_index"]
                 if note_index < len(data["notes"]):
                     for field in [
-                        "start_severity",
-                        "start_reason",
                         "end_severity",
                         "end_reason",
                     ]:
@@ -165,6 +150,7 @@ def process_files(input_folder, output_folder):
                 json.dump(data, f, indent=2)
 
             print(f"Successfully processed {filename}")
+            time.sleep(2)  # Add a delay to avoid rate limiting
 
         except Exception as e:
             print(f"Error processing {filename}: {str(e)}")
@@ -172,6 +158,6 @@ def process_files(input_folder, output_folder):
 
 
 if __name__ == "__main__":
-    input_folder = "AI Revised"
-    output_folder = "AI Revised 2"
+    input_folder = "AI Revised 2"
+    output_folder = "AI Revised 3"
     process_files(input_folder, output_folder)

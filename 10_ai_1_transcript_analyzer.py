@@ -3,6 +3,7 @@ import json
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+import time
 
 load_dotenv()
 OPEN_AI_API = os.getenv("OPEN_AI_API")
@@ -49,7 +50,7 @@ def analyze_issue(description):
 
 # Specify the folder containing the JSON files
 input_folder = "data/notes/filtered_notes/"
-output_folder = "AI Revised"
+output_folder = "AI Revised 1"
 
 # Create the output folder if it doesn't exist
 if not os.path.exists(output_folder):
@@ -122,5 +123,6 @@ for filename in json_files:
     # Save the updated data to a new JSON file
     with open(output_file_path, "w") as f:
         json.dump(data, f, indent=2)
+        time.sleep(2)
 
     print(f"Processed {filename} and saved to {output_file_path}")

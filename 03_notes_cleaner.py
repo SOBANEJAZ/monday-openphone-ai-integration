@@ -9,36 +9,44 @@ from pathlib import Path
 
 
 class DataProcessor:
+
     def __init__(self, json_data: Dict):
         self.data = json_data
 
     def extract_item_data(self, item: Dict) -> Dict:
         """Extract relevant data from an item."""
         # Get column values
-        column_values = {cv["column"]["title"]: cv for cv in item["column_values"]}
+        column_values = {
+            cv["column"]["title"]: cv
+            for cv in item["column_values"]
+        }
 
         # Extract date values
-        date = self._parse_date_value(column_values.get("Date", {}).get("value"))
+        date = self._parse_date_value(
+            column_values.get("Date", {}).get("value"))
         start_time = self._parse_time_value(
-            column_values.get("Start Time", {}).get("value")
-        )
+            column_values.get("Start Time", {}).get("value"))
         end_time = self._parse_time_value(
-            column_values.get("End Time", {}).get("value")
-        )
+            column_values.get("End Time", {}).get("value"))
+        
 
         # Get other values
-        manual_units = column_values.get("Manual units", {}).get(
-            "value"
-        ) or column_values.get("Units", {}).get("value")
-        auto_units = column_values.get("Auto Units", {}).get("value")
+        manual_units = column_values.get(
+            "Manual units", {}).get("value") or column_values.get(
+                "Units", {}).get("value") or column_values.get(
+                    "Manual Units", {}).get("value")
         service_type = self._get_label(column_values.get("Service Type", {}))
         provided_as = self._get_label(column_values.get("Provided As", {}))
         service_line = self._get_label(column_values.get("Service Line", {}))
+        session_status = self._get_label(column_values.get("Session Status", {}))
+        Signature = self._get_label(column_values.get("Signature", {}))
+        
 
         # Get updates
         updates = item.get("updates", [])
         update_text = updates[-1].get("text_body") if updates else None
-        update_creation_time = updates[-1].get("created_at") if updates else None
+        update_creation_time = updates[-1].get(
+            "created_at") if updates else None
 
         return {
             "item_name": item.get("name"),
@@ -48,11 +56,12 @@ class DataProcessor:
             "date": date,
             "start_time": start_time,
             "end_time": end_time,
-            "auto_units": auto_units,
             "manual_units": manual_units,
             "service_type": service_type,
             "provided_as": provided_as,
             "service_line": service_line,
+            "session_status": session_status,
+            "signature": Signature,
             "update_text_body": update_text,
         }
 
@@ -122,8 +131,7 @@ def convert_utc_to_cst(input_file):
                 session_dt = utc_tz.localize(session_dt)
                 session_cst = session_dt.astimezone(cst_tz)
                 item["session_creation_time"] = session_cst.strftime(
-                    "%Y-%m-%d %H:%M:%S"
-                )
+                    "%Y-%m-%d %H:%M:%S")
             except ValueError:
                 print(
                     f"Error converting session_creation_time: {item['session_creation_time']}"
@@ -134,11 +142,12 @@ def convert_utc_to_cst(input_file):
             try:
                 # Parse the UTC timestamp with milliseconds
                 update_dt = datetime.strptime(
-                    item["update_creation_time"].split(".")[0], "%Y-%m-%dT%H:%M:%S"
-                )
+                    item["update_creation_time"].split(".")[0],
+                    "%Y-%m-%dT%H:%M:%S")
                 update_dt = utc_tz.localize(update_dt)
                 update_cst = update_dt.astimezone(cst_tz)
-                item["update_creation_time"] = update_cst.strftime("%Y-%m-%d %H:%M:%S")
+                item["update_creation_time"] = update_cst.strftime(
+                    "%Y-%m-%d %H:%M:%S")
             except ValueError:
                 print(
                     f"Error converting update_creation_time: {item['update_creation_time']}"
@@ -196,8 +205,8 @@ def filter_json_by_date(data, target_date=None):
     """Filter JSON data by date, defaulting to yesterday in CST."""
     if target_date is None:
         cst = timezone("US/Central")
-        target_date = (datetime.now(cst).strftime("%Y-%m-%d"))
-        # target_date = (datetime.now(cst) - timedelta(days=1)).strftime("%Y-%m-%d")
+        # target_date = (datetime.now(cst).strftime("%Y-%m-%d"))
+        target_date = (datetime.now(cst) - timedelta(days=6)).strftime("%Y-%m-%d")
 
     # Validate target date format
     try:
@@ -226,7 +235,9 @@ if __name__ == "__main__":
     # Step 2: Convert timezones
     cleaned_dir = "data/notes/cleaned_notes"
     processed_files = process_directory(cleaned_dir)
-    print(f"\nTotal files processed for timezone conversion: {len(processed_files)}")
+    print(
+        f"\nTotal files processed for timezone conversion: {len(processed_files)}"
+    )
 
     # Step 3: Filter by date
     filtered_dir = "data/notes/filtered_notes/"
@@ -238,3 +249,30 @@ if __name__ == "__main__":
 
         with open(os.path.join(filtered_dir, filename), "w") as f:
             json.dump(filtered_data, f, indent=4)
+
+import shutil
+import os
+
+def copy_folder(src, dest):
+    """
+    Copies the contents of the source folder to the destination folder.
+
+    Parameters:
+    src (str): The path to the source folder.
+    dest (str): The path to the destination folder.
+
+    Returns:
+    None
+    """
+    # Check if the source directory exists
+    if not os.path.exists(src):
+        raise FileNotFoundError(f"Source directory '{src}' does not exist.")
+
+    # Check if the destination directory exists, if not create it
+    if not os.path.exists(dest):
+        os.makedirs(dest)
+
+    # Copy the directory
+    shutil.copytree(src, dest, dirs_exist_ok=True)
+
+copy_folder('data/notes/filtered_notes', 'data/notes/filtered_notes_copy')

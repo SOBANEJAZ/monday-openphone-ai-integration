@@ -30,8 +30,8 @@ PROVIDED_AS_MAP = {
 SEVERITY_MAP = {"high": "0", "medium": "1", "low": "2", "good note": "3"}
 
 # New severity mapping for AI analysis
-AI_start_SEVERITY_MAP = {"Flagged": "2", "Good": "3"}
-AI_end_SEVERITY_MAP = {"Flagged": "0", "Good": "3"}
+AI_start_SEVERITY_MAP = {"Start Flagged": "2", "Start Good": "3"}
+AI_end_SEVERITY_MAP = {"End Flagged": "0", "End Good": "3"}
 
 # New billing status mapping
 BILLING_STATUS_MAP = {"overbilled": "2", "good": "1"}
@@ -282,154 +282,167 @@ def update_all_columns(item_id, board_id, note, board_id_from_filename):
         # Format date for date column
         date_str = safe_get(note, "date")
         if date_str is not None:
-            date_value, year_value = format_date_values(date_str)
-            if date_value is not None:
-                update_column_value(item_id, board_id, "date", date_value)
-            if year_value is not None:
-                update_column_value(item_id, board_id, "year", year_value)
+            update_column_value(item_id, board_id, "date4", date_str)
 
-        # Update start time
-        start_time = format_datetime(safe_get(note, "date"),
-                                     safe_get(note, "start_time"))
-        if start_time is not None:
-            update_column_value(item_id, board_id, "date_13", start_time)
+        # # Update start time
+        # start_time = format_datetime(safe_get(note, "date"),
+        #                              safe_get(note, "start_time"))
+        # if start_time is not None:
+        #     update_column_value(item_id, board_id, "date_13", start_time)
 
-        # Update end time
-        end_time = format_datetime(safe_get(note, "date"),
-                                   safe_get(note, "end_time"))
-        if end_time is not None:
-            update_column_value(item_id, board_id, "date_19", end_time)
+        # # Update end time
+        # end_time = format_datetime(safe_get(note, "date"),
+        #                            safe_get(note, "end_time"))
+        # if end_time is not None:
+        #     update_column_value(item_id, board_id, "date_19", end_time)
 
-        # Update manual units
-        manual_units = safe_get(note, "manual_units")
-        if manual_units is not None:
-            manual_units_str = str(manual_units).strip('"')
-            update_column_value(item_id, board_id, "numbers1",
-                                manual_units_str)
+        # # Update manual units
+        # manual_units = safe_get(note, "manual_units")
+        # if manual_units is not None:
+        #     manual_units_str = str(manual_units).strip('"')
+        #     update_column_value(item_id, board_id, "numbers1",
+        #                         manual_units_str)
 
-        # Update service type status
-        service_type_value = get_mapped_status(safe_get(note, "service_type"),
-                                               SERVICE_TYPE_MAP)
-        if service_type_value is not None:
-            update_column_value(item_id, board_id, "status80",
-                                service_type_value)
+        # # Update service type status
+        # service_type_value = get_mapped_status(safe_get(note, "service_type"),
+        #                                        SERVICE_TYPE_MAP)
+        # if service_type_value is not None:
+        #     update_column_value(item_id, board_id, "status80",
+        #                         service_type_value)
 
-        # Update provided as status
-        provided_as_value = get_mapped_status(safe_get(note, "provided_as"),
-                                              PROVIDED_AS_MAP)
-        if provided_as_value is not None:
-            update_column_value(item_id, board_id, "status4",
-                                provided_as_value)
+        # # Update provided as status
+        # provided_as_value = get_mapped_status(safe_get(note, "provided_as"),
+        #                                       PROVIDED_AS_MAP)
+        # if provided_as_value is not None:
+        #     update_column_value(item_id, board_id, "status4",
+        #                         provided_as_value)
 
-        # Update severity status for transcripts
-        severity_value = get_mapped_status(
-            safe_get(note, "transcript_severity"), SEVERITY_MAP)
-        if severity_value is not None:
-            update_column_value(item_id, board_id, "severity_flags_mkks6sc7",
-                                severity_value)
+        # # Update severity status for transcripts
+        # severity_value = get_mapped_status(
+        #     safe_get(note, "transcript_severity"), SEVERITY_MAP)
+        # if severity_value is not None:
+        #     update_column_value(item_id, board_id, "severity_flags_mkks6sc7",
+        #                         severity_value)
 
-        # Update issue_description with transcript reason
-        transcript_reason = safe_get(note, "transcript_reason")
-        if transcript_reason is not None:
-            update_column_value(item_id, board_id,
-                                "issue_description_mkm0j7qm",
-                                transcript_reason)
+        # # Update issue_description with transcript reason
+        # transcript_reason = safe_get(note, "transcript_reason")
+        # if transcript_reason is not None:
+        #     update_column_value(item_id, board_id,
+        #                         "issue_description_mkm0j7qm",
+        #                         transcript_reason)
 
-        # Update original text body
-        original_text_body = safe_get(note, "update_text_body")
-        if original_text_body is not None:
-            update_column_value(item_id, board_id, "original_note_mkm0z2v3",
-                                original_text_body)
+        # # Update original text body
+        # original_text_body = safe_get(note, "update_text_body")
+        # if original_text_body is not None:
+        #     update_column_value(item_id, board_id, "original_note_mkm0z2v3",
+        #                         original_text_body)
 
-        # Update link
-        link = safe_get(note, "item_id")
-        if link is not None:
-            item_link = f"https://simplehealthservices.monday.com/boards/{board_id_from_filename}/pulses/{link}"
-            update_column_value(item_id, board_id,
-                                "link_to_original_note_mkm09qb0", item_link)
+        # # Update link
+        # link = safe_get(note, "item_id")
+        # if link is not None:
+        #     item_link = f"https://simplehealthservices.monday.com/boards/{board_id_from_filename}/pulses/{link}"
+        #     update_column_value(item_id, board_id,
+        #                         "link_to_original_note_mkm09qb0", item_link)
 
-        # Update start and end reason text columns
-        start_reason = safe_get(note, "start_reason")
-        if start_reason is not None:
-            update_column_value(item_id, board_id, "text_mkm1vk1y",
-                                start_reason)
+        # # Update start and end reason text columns
+        # start_reason = safe_get(note, "start_reason")
+        # if start_reason is not None:
+        #     update_column_value(item_id, board_id, "text_mkm1vk1y",
+        #                         start_reason)
 
-        end_reason = safe_get(note, "end_reason")
-        if end_reason is not None:
-            update_column_value(item_id, board_id, "text_mkm1d8wd", end_reason)
+        # end_reason = safe_get(note, "end_reason")
+        # if end_reason is not None:
+        #     update_column_value(item_id, board_id, "text_mkm1d8wd", end_reason)
 
-        # Update start severity flag
-        start_severity = safe_get(note, "start_severity", "Good")
-        if start_severity is not None:
-            start_severity_value = AI_start_SEVERITY_MAP.get(
-                start_severity, "3")
-            update_column_value(item_id, board_id,
-                                "dup__of_severity_flags_mkm19yh",
-                                start_severity_value)
+        # # Update start severity flag
+        # start_severity = safe_get(note, "start_severity", "Good")
+        # if start_severity is not None:
+        #     start_severity_value = AI_start_SEVERITY_MAP.get(
+        #         start_severity, "3")
+        #     update_column_value(item_id, board_id,
+        #                         "dup__of_severity_flags_mkm19yh",
+        #                         start_severity_value)
 
-        # Update end severity flag
-        end_severity = safe_get(note, "end_severity", "Good")
-        if end_severity is not None:
-            end_severity_value = AI_end_SEVERITY_MAP.get(end_severity, "3")
-            update_column_value(item_id, board_id, "status_mkm1fy0n",
-                                end_severity_value)
+        # # Update end severity flag
+        # end_severity = safe_get(note, "end_severity", "Good")
+        # if end_severity is not None:
+        #     end_severity_value = AI_end_SEVERITY_MAP.get(end_severity, "3")
+        #     update_column_value(item_id, board_id, "status_mkm1fy0n",
+        #                         end_severity_value)
 
-        # Update billing reason
-        billing_reason = safe_get(note, "billing_reason")
-        if billing_reason is not None:
-            update_column_value(item_id, board_id, "text_mkm2sxx6",
-                                billing_reason)
+        # # Update billing reason
+        # billing_reason = safe_get(note, "billing_reason")
+        # if billing_reason is not None:
+        #     update_column_value(item_id, board_id, "text_mkm2sxx6",
+        #                         billing_reason)
 
-        # Update billing improved
-        billing_improved = safe_get(note, "billing_improved")
-        if billing_improved is not None:
-            update_column_value(item_id, board_id, "text_mkm2ez8j",
-                                billing_improved)
+        # # Update billing improved
+        # billing_improved = safe_get(note, "billing_improved")
+        # if billing_improved is not None:
+        #     update_column_value(item_id, board_id, "text_mkm2ez8j",
+        #                         billing_improved)
 
-        # Update billing status
-        billing_status = safe_get(note, "billing_severity")
-        if billing_status is not None:
-            billing_status_value = BILLING_STATUS_MAP.get(
-                billing_status.lower(), "")
-            update_column_value(item_id, board_id, "status_mkm2zs2v",
-                                billing_status_value)
+        # # Update billing status
+        # billing_status = safe_get(note, "billing_severity")
+        # if billing_status is not None:
+        #     billing_status_value = BILLING_STATUS_MAP.get(
+        #         billing_status.lower(), "")
+        #     update_column_value(item_id, board_id, "status_mkm2zs2v",
+        #                         billing_status_value)
 
-        # New column updates start here
+        # # New column updates start here
 
-        # Update service reason text
-        service_reason = safe_get(note, "service_reason")
-        if service_reason is not None:
-            update_column_value(item_id, board_id, "long_text_mkm545rp",
-                                service_reason)
+        # # Update service reason text
+        # service_reason = safe_get(note, "service_reason")
+        # if service_reason is not None:
+        #     update_column_value(item_id, board_id, "long_text_mkm545rp",
+        #                         service_reason)
 
-        # Update columns reason text
-        columns_reason = safe_get(note, "columns_reason")
-        if columns_reason is not None:
-            update_column_value(item_id, board_id, "text_mkm5tqa7",
-                                columns_reason)
+        # # Update columns reason text
+        # columns_reason = safe_get(note, "columns_reason")
+        # if columns_reason is not None:
+        #     update_column_value(item_id, board_id, "text_mkm5tqa7",
+        #                         columns_reason)
 
-        # Update housing services status
-        housing_service = safe_get(note, "service_line")
-        if housing_service is not None:
-            housing_service_value = HOUSING_SERVICES_MAP.get(
-                housing_service, "5")  # Default to "5" if not found
-            update_column_value(item_id, board_id, "status_mkm5hyx0",
-                                housing_service_value)
+        # # Update housing services status
+        # housing_service = safe_get(note, "service_line")
+        # if housing_service is not None:
+        #     housing_service_value = HOUSING_SERVICES_MAP.get(
+        #         housing_service, "5")  # Default to "5" if not found
+        #     update_column_value(item_id, board_id, "status_mkm5hyx0",
+        #                         housing_service_value)
 
-        # Update flag status columns
-        flag_status1 = safe_get(note, "service_severity")
-        if flag_status1 is not None:
-            flag_status_value1 = FLAG_STATUS_MAP.get(
-                flag_status1, "1")  # Default to "Good" if not found
-            update_column_value(item_id, board_id, "status_mkm64aec",
-                                flag_status_value1)
+        # # Update flag status columns
+        # flag_status1 = safe_get(note, "service_severity")
+        # if flag_status1 is not None:
+        #     flag_status_value1 = FLAG_STATUS_MAP.get(
+        #         flag_status1, "1")  # Default to "Good" if not found
+        #     update_column_value(item_id, board_id, "status_mkm64aec",
+        #                         flag_status_value1)
 
-        flag_status2 = safe_get(note, "columns_severity")
-        if flag_status2 is not None:
-            flag_status_value2 = FLAG_STATUS_MAP.get(
-                flag_status2, "1")  # Default to "Good" if not found
-            update_column_value(item_id, board_id, "status_mkm5aj0m",
-                                flag_status_value2)
+        # flag_status2 = safe_get(note, "columns_severity")
+        # if flag_status2 is not None:
+        #     flag_status_value2 = FLAG_STATUS_MAP.get(
+        #         flag_status2, "1")  # Default to "Good" if not found
+        #     update_column_value(item_id, board_id, "status_mkm5aj0m",
+        #                         flag_status_value2)
+
+        units_added = safe_get(note, "total_units")
+        if units_added is not None:
+            update_column_value(item_id, board_id, "numbers_mkm6axzx",
+                                units_added)
+
+        units_status = safe_get(note, "units_status")
+        if units_status is not None:
+            units_status_value = FLAG_STATUS_MAP.get(
+                units_status, "1")  # Default to "Good" if not found
+            update_column_value(item_id, board_id, "status_mkm61j",
+                                units_status_value)
+
+        units_reason = safe_get(note, "units_reason")
+        if units_reason is not None:
+            update_column_value(item_id, board_id, "long_text_mkm6wg9t",
+                                units_reason)
 
     except Exception as e:
         print(f"Error in update_all_columns for item {item_id}: {str(e)}")
@@ -454,37 +467,27 @@ def format_date_values(date_str):
 def process_json_file(filename):
     file_path = filename
     created_items = []
-
     try:
         with open(file_path, "r") as file:
             data = json.load(file)
-
         notes = data.get("notes", [])
         if not notes:
             print(f"No notes found in {filename}")
             return created_items
-
         group_id = notes[0].get("group_name", "")
         if not group_id:
             print(f"No group_id found in {filename}")
             return created_items
 
-        board_id_from_filename = os.path.splitext(
-            os.path.basename(filename))[0]
-
+        board_id_from_filename = os.path.splitext(os.path.basename(filename))[0]
         print(f"Processing {board_id_from_filename} with group_id: {group_id}")
 
-        for note in notes:
-            group_title = note.get("group_title", "")
-
-            if not group_title:
-                print(f"Skipping note without title in {filename}")
-                continue
-
+        for day_number, note in enumerate(notes, 1):
+            group_title = "Daily Units Report"
             mutation = """
             mutation {
                 create_item(
-                    board_id: 8139951792,
+                    board_id: 8198737855,
                     group_id: "%s",
                     item_name: "%s") {
                     id
@@ -494,49 +497,32 @@ def process_json_file(filename):
                 group_id,
                 group_title.replace('"', '\\"'),
             )
-
             try:
                 response = requests.post(url,
-                                         json={"query": mutation},
-                                         headers=headers)
+                                      json={"query": mutation},
+                                      headers=headers)
                 response_data = response.json()
-
                 if response.status_code == 200 and "data" in response_data:
                     item_id = response_data["data"]["create_item"]["id"]
                     created_items.append(item_id)
-                    print(
-                        f"Created item with ID: {item_id} for group {group_id}, title: {group_title}"
-                    )
-
-                    update_all_columns(item_id, "8139951792", note,
-                                       board_id_from_filename)
-
+                    print(f"Created item with ID: {item_id} for group {group_id}, title: {group_title}")
+                    update_all_columns(item_id, "8198737855", note, board_id_from_filename)
                 else:
-                    error_message = response_data.get(
-                        "errors", [{
-                            "message": "Unknown error"
-                        }])[0]["message"]
-                    print(
-                        f"Error creating item for {filename}, note {note.get('item_name')}: {error_message}"
-                    )
-
+                    error_message = response_data.get("errors", [{"message": "Unknown error"}])[0]["message"]
+                    print(f"Error creating item for {filename}, note {note.get('item_name')}: {error_message}")
             except requests.exceptions.RequestException as e:
                 print(f"Request error for {filename}: {str(e)}")
             except Exception as e:
-                print(
-                    f"Unexpected error processing note in {filename}: {str(e)}"
-                )
-
+                print(f"Unexpected error processing note in {filename}: {str(e)}")
     except json.JSONDecodeError as e:
         print(f"Error parsing JSON in {filename}: {str(e)}")
     except Exception as e:
         print(f"Error processing file {filename}: {str(e)}")
-
     return created_items
 
 
 def main():
-    dir_path = "Output/"  # Update this to your directory path
+    dir_path = "Output_units/"  # Update this to your directory path
     all_created_items = []
 
     for filename in os.listdir(dir_path):
