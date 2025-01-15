@@ -26,7 +26,8 @@ PROVIDED_AS_MAP = {
     "indirect": "1",
     "Direct/In-Person": "3",
 }
-
+FLAG_STATUS_MAP = {"Good": "1", "Flagged": "0"}
+FLAG_STATUS_MAP_TRANSCRIPTS = {"Good": "2", "Flagged": "0"}
 SEVERITY_MAP = {"high": "0", "medium": "1", "low": "2", "good note": "3"}
 
 # New severity mapping for AI analysis
@@ -199,7 +200,6 @@ HOUSING_SERVICES_MAP = {
 }
 
 # New status mapping for flag statuses
-FLAG_STATUS_MAP = {"Good": "1", "Flagged": "0"}
 
 
 def update_column_value(item_id, board_id, column_id, value):
@@ -323,7 +323,7 @@ def update_all_columns(item_id, board_id, note, board_id_from_filename):
 
         # Update severity status for transcripts
         severity_value = get_mapped_status(
-            safe_get(note, "transcript_severity"), SEVERITY_MAP)
+            safe_get(note, "transcript_severity"), FLAG_STATUS_MAP_TRANSCRIPTS)
         if severity_value is not None:
             update_column_value(item_id, board_id, "severity_flags_mkks6sc7",
                                 severity_value)

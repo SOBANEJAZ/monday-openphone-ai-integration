@@ -179,6 +179,15 @@ def process_files(input_folder, output_folder):
             original note: "update_text_body"
             Units: "manual_units"
             **Session Notes**: {data['notes']}
+
+            Make sure the structure of the response is as follows in this example:
+            "notes_analysis": [
+                {{
+                    "note_index": 0,
+                    "severity": "overbilled",
+                    "reason": "The note is too vague for the amount billed. The note describes basic research and planning activities that don't justify 10 units ($171.70). The activities described (reviewing an email, preliminary housing research, and planning future actions) would typically warrant 2-4 units maximum. The note lacks specific details about the actual time spent, number of properties researched, or concrete actions taken. Most content describes future plans rather than completed work."
+                }}
+            ]
             """
 
             # Perform analysis

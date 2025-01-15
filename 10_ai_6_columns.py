@@ -155,8 +155,16 @@ for filename in json_files:
     "index": 1,
     "label": "Flagged",
     "reason": "The Units are not added by the staff member, and due to this the note is being marked as Flagged."
-    """
 
+    Make sure the structure of the response is as follows in this example:
+    "notes_analysis": [
+        {{
+            "note_index": 0,
+            "severity": "Good",
+            "reason": "All the columns are filled, therefore the note is marked as good"
+        }}
+    ]
+    """
 
     # Perform analysis
     analysis = analyze_issue(description)

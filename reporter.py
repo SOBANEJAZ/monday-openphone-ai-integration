@@ -18,7 +18,7 @@ for item in init_data:
     data.append(item["Board_id"])
 boards = [int(item) for item in data]
 
-b = [8198737855]
+b = [8139951792]
 for board in b:
     print(f"Fetching data for board {board}...")
     load_dotenv()

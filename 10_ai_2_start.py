@@ -135,6 +135,15 @@ def process_files(input_folder, output_folder):
             5. If the Start Time is not provided, mark the note as **Flagged**.
             6. If the Session Creation Time is after the Start Time, mark the note as **Flagged**.
             7. Output a clear and consice reason for the severity marked and use the example reasons to understand how to write the reason.
+
+            Make sure the structure of the response is as follows in this example:
+            "notes_analysis": [
+                {{
+                    "note_index": 0,
+                    "severity": "Good",
+                    "reason": "The Session Creation Time was 13 minutes earlier than the Start Time. The Session Creation Time was 11:13 AM, and the Start Time was 11:26 AM. Therefore, the note is marked as Good due to the correct time entry."
+                }}
+            ]
             """
 
             # Perform analysis

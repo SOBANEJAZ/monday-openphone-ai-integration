@@ -106,6 +106,15 @@ for filename in json_files:
     Make sure that the reasoning is clear and and fully detailed around 3 lines or more.
     **Session Notes**: {data['notes']}
     **Call Transcripts**: {data['call_transcripts']}
+
+    Make sure the structure of the response is as follows in this example:
+    "notes_analysis": [
+        {{
+            "note_index": 0,
+            "severity": "Good",
+            "reason": "The call log and transcript are available for the note. The call log shows a call from 11:13 AM to 11:26 AM, and the transcript is available for this time period. The transcript information is also complete and matches the note. Therefore, the note is marked as Good due to the presence of both the call log and transcript."
+        }},
+        ]
     """
 
     # Perform analysis

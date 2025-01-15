@@ -134,11 +134,8 @@ for filename in json_files:
 
     If the service type and service line are not added correctly, mark the note as 'Flagged' and output a concise and clear reason for it. If the note matches the service line and service type, mark the note as 'Good'. For each note, provide an index starting from zero.
     - If the service line matches the note but the service type doesn't, mark the note as 'Flagged' and output a concise and clear reason for it, and vice versa.
-    - If either the service line or service type does not exist or is not added, mark the note as 'Flagged'.
-
-    The AI should output one of the following labels for each note:
-    - Index, Good, reason,
-    - Index, Flagged, reason
+    - If either the service line or service type does not exist or is not added, mark the note as 'Flagged'
+    - Go through each and make sure the reponses are in structured format.
 
     **Session Notes**: {data['notes']}
 
@@ -154,7 +151,7 @@ for filename in json_files:
     Service Line: "Assisting the person with the housing search and application process",
     Service Type: "Housing Transition",
 
-    AI response:
+    AI response in json format:
     "index": 0,
     "label": "Good",
     "reason": "In the note, Assistance of client in completing their housing application matches the added Service Line and Service type.",
@@ -163,7 +160,7 @@ for filename in json_files:
     Note Session: "I met the client in person and we helped in meet the landlord",
     Service Line: "Helping the person meet and build a relationship with a prospective landlord",
     Service Type: "Housing Sustaining",
-    AI response:
+    AI response in json format:
     "index": 1,
     "label": "Flagged",
     "reason": "The note indicates helping the person meet and build a relationship with a prospective landlord, but the added service line is Housing Sustaining. The note should be marked as Flagged, due to the mismatch between the added service line and servie type. The service type should be updated to Housing Transition.""
@@ -172,11 +169,15 @@ for filename in json_files:
     Note Session: "We had a staff meeting to discuss housing options for the client.",
     Service Line: "Assisting the person with the housing search and application process",
     Service Type: "Housing Transition",
-
-    AI response:
-    "index": 2,
-    "label": "Flagged",
-    "reason": "The note describes a staff meeting, which is a non-billable service, but the service line and type are related to Housing Transition."
+    
+    Make sure the structure of the response is as follows in this example:
+    "notes_analysis": [
+        {{
+            "note_index": 0,
+            "severity": "Flagged",
+            "reason": "The note indicates helping the person meet and build a relationship with a prospective landlord, but the added service line is Housing Sustaining. The note should be marked as Flagged, due to the mismatch between the added service line and servie type. The service type should be updated to Housing Transition."
+        }}
+    ]
     """
 
 

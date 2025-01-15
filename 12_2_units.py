@@ -139,7 +139,7 @@ with open("data/reference/init.json", "r") as f:
 board_id_to_group = {item["Board_id"]: item["group_name"] for item in init_data}
 
 # Step 2: Set directories
-final_dir = "final"
+final_dir = "AI Revised 2"
 output_dir = "Output_units"
 
 # Create output directory if it doesn't exist

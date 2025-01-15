@@ -5,9 +5,6 @@ import json
 from typing import List, Dict, Any
 from pytz import timezone
 
-cst = timezone("US/Central")
-# target_date = (datetime.now(cst).strftime("%Y-%m-%d"))
-target_date = (datetime.now(cst) - timedelta(days=8)).strftime("%Y-%m-%d")
 
 def process_json_files(main_json_path, call_logs_dir):
     # Read main JSON file
@@ -161,7 +158,26 @@ with open("data/reference/phone_details.json", "w") as f:
 
 
 def filter_json_by_date(data, target_date=None):
-    # Filter items using "Start Time" key
+
+    # Use today's date in CST timezone if no target date provided
+    if target_date is None:
+        cst = timezone("US/Central")
+        # ------------------------
+        # ------------------------
+        # ------------------------
+        # ------------------------
+        # ------------------------
+        # ------------------------
+        # ------------------------
+        # ------------------------
+        # target_date = (datetime.now(cst).strftime("%Y-%m-%d"))
+        target_date = (datetime.now(cst) - timedelta(days=7)).strftime("%Y-%m-%d")
+
+    # Validate target date format
+    try:
+        datetime.strptime(target_date, "%Y-%m-%d")
+    except ValueError:
+        raise ValueError("target_date must be in YYYY-MM-DD format")
     filtered_data = []
     for item in data:
         start_time_str = item.get("Start Time")

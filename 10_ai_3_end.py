@@ -133,8 +133,16 @@ def process_files(input_folder, output_folder):
             4. If the Update Creation Time is after the End Time, then output the note as **Flagged**.
             5. If the End Time is not provided, mark the note as **Flagged**.
             6. Output a clear and consice reason for the severity marked and use the example reasons to understand how to write the reason.
-            """
 
+            Make sure the structure of the response is as follows in this example:
+            "notes_analysis": [
+                {{
+                    "note_index": 0,
+                    "severity": "Good",
+                    "reason": "The Update Creation Time was 13 minutes earlier than the End Time. The Update Creation Time was 11:13 AM, and the End Time was 11:26 AM. Therefore, the note is marked as Good due to the correct time entry."
+                }}
+            ]
+            """
 
             # Perform analysis
             analysis = analyze_issue(description)

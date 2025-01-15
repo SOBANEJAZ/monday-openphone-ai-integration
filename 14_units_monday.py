@@ -5,9 +5,7 @@ import requests
 from datetime import datetime, timedelta
 from pytz import timezone
 
-cst = timezone("US/Central")
-# target_date = (datetime.now(cst).strftime("%Y-%m-%d"))
-date_str = (datetime.now(cst) - timedelta(days=8)).strftime("%Y-%m-%d")
+
 
 # Load environment variables
 load_dotenv()
@@ -72,6 +70,9 @@ def safe_get(note, key, default=None):
 
 def update_all_columns(item_id, board_id, note, board_id_from_filename):
     try:
+        cst = timezone("US/Central")
+        # target_date = (datetime.now(cst).strftime("%Y-%m-%d"))
+        date_str = (datetime.now(cst) - timedelta(days=7)).strftime("%Y-%m-%d")
         if date_str is not None:
             update_column_value(item_id, board_id, "date4", date_str)
 
