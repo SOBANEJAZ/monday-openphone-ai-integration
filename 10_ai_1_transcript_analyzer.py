@@ -30,7 +30,7 @@ def analyze_issue(description):
                                     "note_index": {"type": "integer"},
                                     "severity": {
                                         "type": "string",
-                                        "enum": ["low", "medium", "high", "good note"],
+                                        "enum": ["Good", "Flagged"],
                                     },
                                     "reason": {"type": "string"},
                                 },
@@ -79,16 +79,15 @@ for filename in json_files:
        - Calculate the time difference between the note and the transcript duration.
 
     2. **Severity Assessment**:
-       - If the time difference is 5 minutes or less, mark the note as 'low' severity.
-       - If the time difference is more than 10 minutes but less than or equal to 15 minutes, mark the note as 'medium' severity.
-       - If the time difference exceeds 15 minutes, mark the note as 'high' severity.
-       - If the time difference is exactly 1 or 2 minutes, mark it as a 'good note'.
-       - If no transcript or time record is found for the note, mark it as 'high' severity.
-       - If time record is found but no transcript, mark it as 'good note' severity, also in final response for this don't mention absence of transcript. Just compare time records.
+       - If the time difference is exactly 1 or 2 minutes, mark it as a 'Good' severity.
+       - If the time difference is 5 minutes or less, mark the note as 'Good' severity.
+       - If the time difference exceeds 5 minutes, mark the note as 'Flagged' severity.
+       - If no transcript or time record is found for the note, mark it as 'Flagged' severity.
+       - If time record is found but no transcript, mark it as 'Good' severity, also in final response for this don't mention absence of transcript. Just compare time records.
 
     3. **Service Type Consideration**:
-       - If the service provided is either Direct/In Person or Indirect, mark the note as 'good note' severity and do not verify call records and transcripts. Just tell reason that the service was in person so no need to verify call records and transcripts and in Indirect, verify call records if available and if they are not then mark it as good note. 
-       - Verify call records and transcripts if the service is Direct Remote through a call, no call records or transcripts, mark it as 'high' severity.
+       - If the service provided is either Direct/In Person or Indirect, mark the note as 'Good' severity and do not verify call records and transcripts. Just tell reason that the service was in person so no need to verify call records and transcripts and in Indirect, verify call records if available and if they are not available then still mark it as 'Good'.
+       - Verify call records and transcripts if the service is Direct Remote through a call, no call records or transcripts, mark it as 'Flagged' severity.
        - Direct
          • Definition: Services provided in person with the client.
        - Indirect Remote
@@ -97,7 +96,7 @@ for filename in json_files:
          • Definition: Services delivered directly to the client remotely (e.g., via phone or video).
 
     4. **Content Completeness**:
-       - If a transcript exists but the note lacks important information from the transcript, mark it as 'medium' severity and provide a detailed reason.
+       - If a transcript exists but the note lacks important information from the transcript, mark it as 'Flagged' severity and provide a detailed reason.
 
     5. **Detailed Reasoning**:
        - For each note, provide a detailed reasoning for the severity level assigned. 

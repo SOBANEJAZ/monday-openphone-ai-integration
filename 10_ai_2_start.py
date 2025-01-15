@@ -98,7 +98,7 @@ def process_files(input_folder, output_folder):
             # Prepare the description
             description = f"""
             You are an **Employee Time Checker**. Your task is to evaluate the accuracy of employee added times based on the following sequence for each note:
-            - First **Session Creation Time** and then **Start Time**. Make sure that this sequence is followed, if not then output the note as **Flagged**. If the Session Creation Time is before the Start Time, then output the note as **Good**.
+            - First **Session Creation Time** and then **Start Time**. Make sure that this sequence is followed, if not then output the note as **Flagged**. If the Session Creation Time is before the Start Time within 20 minutes, then output the note as **Good**. If the Session Creation Time is 20 minutes or more before the Start Time, then output the note as **Flagged**.
 
             For each note in the **Session Notes**, you need to:
             1. Assign an Index to each note, starting from zero.
@@ -112,9 +112,10 @@ def process_files(input_folder, output_folder):
             - Always use 12 Hour Time Format should be (e.g., 01:30 AM/PM).
             - Always provide the time difference between **Session Creation Time** and **Start Time** in the reason. The difference should be in format of **HH:MM**.
 
-            ### Example Start Reason:
-            - **Good Reason**: The Session Creation Time was 31 minutes earlier than the Start Time. The Session Creation Time was 9:01 AM, and the Start Time was 9:32 AM. Therefore, the note is marked as Good due to the correct time entry.
-            - **Flagged Reason**: The Session Creation Time was an hours after the Start Time. The Session Creation Time was 10:01 AM, and the Start Time was 9:01 AM. Because the Session Creation Time was after the Start Time, the note is marked as Flagged.
+            ### Example Reasons:
+            - **Good Reason**: The Session Creation Time was 13 minutes earlier than the Start Time. The Session Creation Time was 11:13 AM, and the Start Time was 11:26 AM. Therefore, the note is marked as Good due to the correct time entry.
+            - **Flagged Reason**: The Session Creation Time was 31 minutes earlier than the Start Time. The Session Creation Time was 12:06 AM, and the Start Time was 12:37 AM. Therefore, the note is marked as Flagged due to the correct time entry. The Session Creation Time should be before the Start Time within 20 minutes.
+            - **Flagged Reason**: The Session Creation Time was an hours after the Start Time. The Session Creation Time was 10:01 AM, and the Start Time was 9:01 AM. Because the Session Creation Time was after the Start Time, the note is marked as Flagged. The Session Creation Time should be before the Start Time within 20 minutes.
 
             Use the 12-hour time format (e.g., 10:02 AM, 12:00 PM) in your responses.
             Make sure you provide the correct severity and reason for each note and give each its index in the sequence(starting from zero).
@@ -124,8 +125,17 @@ def process_files(input_folder, output_folder):
             - **Start Time** = "start_time"
 
             **Session Notes**: {data['notes']}
-            """
 
+
+            Steps to follow:
+            1. Assign an Index to each note, starting from zero.
+            2. Calculate the time difference between **Session Creation Time** and **Start Time** in minutes.
+            3. If the Session Creation Time is before the Start Time within 20 minutes, then output the note as **Good**.
+            4. If the Session Creation Time is 20 minutes or more before the Start Time, then output the note as **Flagged**.
+            5. If the Start Time is not provided, mark the note as **Flagged**.
+            6. If the Session Creation Time is after the Start Time, mark the note as **Flagged**.
+            7. Output a clear and consice reason for the severity marked and use the example reasons to understand how to write the reason.
+            """
 
             # Perform analysis
             analysis = analyze_issue(description)

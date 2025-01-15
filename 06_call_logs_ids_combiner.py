@@ -5,6 +5,9 @@ import json
 from typing import List, Dict, Any
 from pytz import timezone
 
+cst = timezone("US/Central")
+# target_date = (datetime.now(cst).strftime("%Y-%m-%d"))
+target_date = (datetime.now(cst) - timedelta(days=8)).strftime("%Y-%m-%d")
 
 def process_json_files(main_json_path, call_logs_dir):
     # Read main JSON file
@@ -85,9 +88,10 @@ def get_datetime_format(datetime_str):
             return "%Y-%m-%dT%H:%M:%S.%fZ"
         else:
             return "%Y-%m-%dT%H:%M:%S.Z"
-    elif (datetime_str.startswith(
-        ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
-          and "+0000" in datetime_str):
+    elif (
+        datetime_str.startswith(("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
+        and "+0000" in datetime_str
+    ):
         return "%a, %d %b %Y %H:%M:%S %z"
     else:
         raise ValueError(f"Unknown datetime format: {datetime_str}")
@@ -117,23 +121,22 @@ for item in data:
 
     # Format back to the original format
     if start_fmt == "%Y-%m-%dT%H:%M:%S.%fZ":
-        start_time_cst_str = start_time_cst.strftime(
-            "%Y-%m-%dT%H:%M:%S.%f")[:-3] + start_time_cst.strftime("%z")
-        start_time_cst_str = start_time_cst_str[:-2] + ":" + start_time_cst_str[
-            -2:]
+        start_time_cst_str = start_time_cst.strftime("%Y-%m-%dT%H:%M:%S.%f")[
+            :-3
+        ] + start_time_cst.strftime("%z")
+        start_time_cst_str = start_time_cst_str[:-2] + ":" + start_time_cst_str[-2:]
     elif start_fmt == "%Y-%m-%dT%H:%M:%S.Z":
         start_time_cst_str = start_time_cst.strftime("%Y-%m-%dT%H:%M:%S%z")
-        start_time_cst_str = start_time_cst_str[:-2] + ":" + start_time_cst_str[
-            -2:]
+        start_time_cst_str = start_time_cst_str[:-2] + ":" + start_time_cst_str[-2:]
     elif start_fmt == "%a, %d %b %Y %H:%M:%S %z":
-        start_time_cst_str = start_time_cst.strftime(
-            "%a, %d %b %Y %H:%M:%S %z")
+        start_time_cst_str = start_time_cst.strftime("%a, %d %b %Y %H:%M:%S %z")
     else:
         raise ValueError(f"Unknown format: {start_fmt}")
 
     if end_fmt == "%Y-%m-%dT%H:%M:%S.%fZ":
-        end_time_cst_str = end_time_cst.strftime(
-            "%Y-%m-%dT%H:%M:%S.%f")[:-3] + end_time_cst.strftime("%z")
+        end_time_cst_str = end_time_cst.strftime("%Y-%m-%dT%H:%M:%S.%f")[
+            :-3
+        ] + end_time_cst.strftime("%z")
         end_time_cst_str = end_time_cst_str[:-2] + ":" + end_time_cst_str[-2:]
     elif end_fmt == "%Y-%m-%dT%H:%M:%S.Z":
         end_time_cst_str = end_time_cst.strftime("%Y-%m-%dT%H:%M:%S%z")
@@ -158,20 +161,6 @@ with open("data/reference/phone_details.json", "w") as f:
 
 
 def filter_json_by_date(data, target_date=None):
-
-    # Use today's date in CST timezone if no target date provided
-    if target_date is None:
-        cst = timezone("US/Central")
-        # target_date = (datetime.now(cst).strftime("%Y-%m-%d"))
-        target_date = (datetime.now(cst) -
-                       timedelta(days=6)).strftime("%Y-%m-%d")
-
-    # Validate target date format
-    try:
-        datetime.strptime(target_date, "%Y-%m-%d")
-    except ValueError:
-        raise ValueError("target_date must be in YYYY-MM-DD format")
-
     # Filter items using "Start Time" key
     filtered_data = []
     for item in data:
@@ -179,8 +168,7 @@ def filter_json_by_date(data, target_date=None):
         if start_time_str:
             try:
                 # Parse the Start Time string
-                start_time = datetime.strptime(start_time_str,
-                                               "%Y-%m-%dT%H:%M:%S.%f%z")
+                start_time = datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M:%S.%f%z")
                 # Extract the date part
                 item_date = start_time.strftime("%Y-%m-%d")
                 if item_date == target_date:

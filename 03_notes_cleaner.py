@@ -8,6 +8,10 @@ import pytz
 from pathlib import Path
 
 
+cst = timezone("US/Central")
+# target_date = (datetime.now(cst).strftime("%Y-%m-%d"))
+target_date = (datetime.now(cst) - timedelta(days=8)).strftime("%Y-%m-%d")
+
 class DataProcessor:
 
     def __init__(self, json_data: Dict):
@@ -202,19 +206,6 @@ def process_directory(directory_path):
 
 
 def filter_json_by_date(data, target_date=None):
-    """Filter JSON data by date, defaulting to yesterday in CST."""
-    if target_date is None:
-        cst = timezone("US/Central")
-        # target_date = (datetime.now(cst).strftime("%Y-%m-%d"))
-        target_date = (datetime.now(cst) - timedelta(days=6)).strftime("%Y-%m-%d")
-
-    # Validate target date format
-    try:
-        datetime.strptime(target_date, "%Y-%m-%d")
-    except ValueError:
-        raise ValueError("target_date must be in YYYY-MM-DD format")
-
-    # Filter items
     filtered_data = [item for item in data if item.get("date") == target_date]
     return filtered_data
 

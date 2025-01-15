@@ -124,6 +124,15 @@ def process_files(input_folder, output_folder):
             - **End Time** = "end_time"
 
             **Session Notes**: {data['notes']}
+
+
+            Steps to follow:
+            1. Assign an Index to each note, starting from zero.
+            2. Calculate the time difference between **Update Creation Time** and **End Time** in minutes.
+            3. If the Update Creation Time is before the End Time, then output the note as **Good**.
+            4. If the Update Creation Time is after the End Time, then output the note as **Flagged**.
+            5. If the End Time is not provided, mark the note as **Flagged**.
+            6. Output a clear and consice reason for the severity marked and use the example reasons to understand how to write the reason.
             """
 
 
