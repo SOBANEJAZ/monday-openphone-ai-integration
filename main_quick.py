@@ -22,7 +22,7 @@ scripts = [
     "13.py",
     "14_hired_units.py",
     "14_units_monday.py",
-    "remover.py"
+    "remover.py",
 ]
 
 script_dir = os.getcwd()  # Current working directory

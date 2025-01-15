@@ -240,30 +240,3 @@ if __name__ == "__main__":
 
         with open(os.path.join(filtered_dir, filename), "w") as f:
             json.dump(filtered_data, f, indent=4)
-
-import shutil
-import os
-
-def copy_folder(src, dest):
-    """
-    Copies the contents of the source folder to the destination folder.
-
-    Parameters:
-    src (str): The path to the source folder.
-    dest (str): The path to the destination folder.
-
-    Returns:
-    None
-    """
-    # Check if the source directory exists
-    if not os.path.exists(src):
-        raise FileNotFoundError(f"Source directory '{src}' does not exist.")
-
-    # Check if the destination directory exists, if not create it
-    if not os.path.exists(dest):
-        os.makedirs(dest)
-
-    # Copy the directory
-    shutil.copytree(src, dest, dirs_exist_ok=True)
-
-copy_folder('data/notes/filtered_notes', 'data/notes/filtered_notes_copy')
