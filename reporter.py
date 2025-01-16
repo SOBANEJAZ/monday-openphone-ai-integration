@@ -13,22 +13,26 @@ dir = "data/reference/init.json"
 with open(dir, "r") as f:
     init_data = json.load(f)
 
+
+# converting to integers
 data = []
 for item in init_data:
     data.append(item["Board_id"])
 boards = [int(item) for item in data]
-
 b = [5831486789]
+
 for board in b:
     print(f"Fetching data for board {board}...")
+    # Load API key from .env file
     load_dotenv()
+    # API_KEY = os.getenv("MONDAY_API_KEY")
     url = "https://api.monday.com/v2"
     headers = {
         "Content-Type": "application/json",
         "Authorization": api,
     }
 
-    def fetch_items_from_board(board_id: int) -> List[dict]:
+    def fetch_items_from_board(board_id: int) -> List[str]:
         """Fetch all items from a specified board."""
         query = (
             """
@@ -37,13 +41,11 @@ for board in b:
                 groups {
                     title
                     id
-                    items_page(limit: 200) {
+                    items_page(limit: 400) {
                         cursor
                         items {
                             id
                             name
-                            created_at
-                            updated_at
                         }
                     }
                 }
@@ -56,23 +58,18 @@ for board in b:
         response = requests.post(url, json={"query": query}, headers=headers)
         if response.status_code == 200:
             data = response.json()
+            # Save response to a JSON file
             with open("monday_response.json", "w") as json_file:
                 json.dump(data, json_file, indent=4)
 
-            items_data = []
+            # Extract item IDs
+            item_ids = []
             for board in data.get("data", {}).get("boards", []):
                 for group in board.get("groups", []):
                     items = group.get("items_page", {}).get("items", [])
                     for item in items:
-                        items_data.append(
-                            {
-                                "id": item.get("id"),
-                                "name": item.get("name"),
-                                "created_at": item.get("created_at"),
-                                "updated_at": item.get("updated_at"),
-                            }
-                        )
-            return items_data
+                        item_ids.append(item.get("id"))
+            return item_ids
         else:
             print(f"Error fetching items from board {board_id}")
             print(f"Response: {response.text}")
@@ -180,8 +177,6 @@ for board in b:
                 items(ids: $itemIds) {
                     id
                     name
-                    created_at
-                    updated_at
                     updates {
                         id
                         text_body
@@ -191,16 +186,16 @@ for board in b:
                     column_values {
                         column {
                             title
-                            updated_at
                         }
                         value
-                        type
-                        ... on StatusValue {
-                            label
-                            update_id
-                            updated_at
-                        }
+                    value
+                    type
+                    ... on StatusValue  { # will only run for status columns
+                        label
+                        update_id
+                        updated_at
                     }
+                }
                 }
             }
             """
@@ -270,10 +265,13 @@ for board in b:
     def merge_responses(monday_data: dict, updates_data: dict) -> dict:
         """Merge the Monday data with updates and column values data."""
         try:
+            # Create updates and columns dictionaries
             updates_by_id, columns_by_id = create_updates_dictionary(updates_data)
 
+            # Create a copy of monday_data to avoid modifying the original
             merged_data = monday_data.copy()
 
+            # Update the copied data with updates and column values
             update_items(merged_data, updates_by_id, columns_by_id)
 
             return merged_data
@@ -283,18 +281,16 @@ for board in b:
 
     def main():
         board_id = board
-        items_data = fetch_items_from_board(board_id)
-        print(f"Found {len(items_data)} items")
+        item_ids = fetch_items_from_board(board_id)
+        print(f"Found {len(item_ids)} items")
 
-        # Extract just IDs for updates query
-        item_ids = [item["id"] for item in items_data]
         all_updates, successful_count = fetch_updates_in_batches(item_ids)
 
         with open("item_updates.json", "w") as updates_file:
             json.dump(all_updates, updates_file, indent=4)
 
         print("\nFinal Summary:")
-        print(f"Total items: {len(items_data)}")
+        print(f"Total items: {len(item_ids)}")
         print(f"Successfully processed: {successful_count}")
 
     def load_json_file(filename: str) -> dict:
@@ -356,7 +352,7 @@ for board in b:
         os.remove("item_updates.json")
         print("Successfully cleaned up directory")
         print("\nMerging complete!")
-        time.sleep(60)
+        time.sleep(35)
 
     if __name__ == "__main__":
         main()
