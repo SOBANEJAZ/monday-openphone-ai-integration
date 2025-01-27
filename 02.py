@@ -354,7 +354,7 @@ for board in boards:
         os.remove("item_updates.json")
         print("Successfully cleaned up directory")
         print("\nMerging complete!")
-        time.sleep(60)
+        time.sleep(45)
 
     if __name__ == "__main__":
         main()

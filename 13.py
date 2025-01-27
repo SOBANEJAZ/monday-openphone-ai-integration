@@ -15,8 +15,8 @@ headers = {
 
 # Existing status mapping dictionaries
 SERVICE_TYPE_MAP = {
-    "Transitioning": "0",
-    "Sustaining": "1",
+    "Transitioning": "1",
+    "Sustaining": "0",
     "Consultation": "2"
 }
 

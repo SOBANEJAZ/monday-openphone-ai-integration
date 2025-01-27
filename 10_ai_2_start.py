@@ -106,7 +106,7 @@ def process_files(input_folder, output_folder):
             2. Provide a clear and detailed reason for your assessment based on the following criteria:
 
             ### 1. **Session Creation Time vs. Start Time**:
-            - If the **Session Creation Time** is before the **Start Time**, mark it as **Good**.
+            - If the **Session Creation Time** is before the **Start Time** within 20 minutes, mark it as **Good**.
             - If the **Session Creation Time** is after the **Start Time**, mark it as **Flagged**.
             - If Start Time is not provided, mark the note as **Flagged**.
             - Always use 12 Hour Time Format should be (e.g., 01:30 AM/PM).
@@ -114,8 +114,9 @@ def process_files(input_folder, output_folder):
 
             ### Example Reasons:
             - **Good Reason**: The Session Creation Time was 13 minutes earlier than the Start Time. The Session Creation Time was 11:13 AM, and the Start Time was 11:26 AM. Therefore, the note is marked as Good due to the correct time entry.
-            - **Flagged Reason**: The Session Creation Time was 31 minutes earlier than the Start Time. The Session Creation Time was 12:06 AM, and the Start Time was 12:37 AM. Therefore, the note is marked as Flagged due to the correct time entry. The Session Creation Time should be before the Start Time within 20 minutes.
+            - **Flagged Reason**: The Session Creation Time was 3 hours and 31 minutes earlier than the Start Time. The Session Creation Time was 09:06 AM, and the Start Time was 12:37 AM. Therefore, the note is marked as Flagged due to the correct time entry. The Session Creation Time should be before the Start Time within 20 minutes.
             - **Flagged Reason**: The Session Creation Time was an hours after the Start Time. The Session Creation Time was 10:01 AM, and the Start Time was 9:01 AM. Because the Session Creation Time was after the Start Time, the note is marked as Flagged. The Session Creation Time should be before the Start Time within 20 minutes.
+            - **Flagged Reason**: The Session Creation Time was 4 minutes after the Start Time. The Session Creation Time was 10:02 AM, and the Start Time was 09:58 AM. Hence, the note is marked as Flagged due to the significant discrepancy. 
 
             Use the 12-hour time format (e.g., 10:02 AM, 12:00 PM) in your responses.
             Make sure you provide the correct severity and reason for each note and give each its index in the sequence(starting from zero).

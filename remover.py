@@ -33,7 +33,6 @@ dirs_to_clean = [
     "AI Revised 4",
     "AI Revised 5",
     "AI Revised 6",
-    "data/call_logs",
     "data/notes/cleaned_notes",
     "data/notes/filtered_notes",
     "data/reference",

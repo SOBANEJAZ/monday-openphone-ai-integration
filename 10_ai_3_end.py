@@ -96,8 +96,8 @@ def process_files(input_folder, output_folder):
 
             # Prepare the description
             description = f"""
-            You are an **Employee Time Checker**. Your task is to evaluate the accuracy of employee added times based on the following sequence:
-            First **Update Creation Time** and then **End Time**. Make sure that this sequence is followed, if not then mark the note as **Flagged**.  If the Update Creation Time is before the End Time, then output the note as **Good**.
+            You are an **Employee Time Checker**. Your task is to evaluate the accuracy of employee added times based on the following sequence for each note:
+            First **Update Creation Time** and then **End Time**. Make sure that this sequence is followed, if not then mark the note as **Flagged**. If the Update Creation Time is before the End Time within 20 minutes, then output the note as **Good**. If the Update Creation Time is 20 minutes or more before the End Time, then output the note as **Flagged**.
 
             For each note in the **Session Notes**, you need to:
             1. Assign an Index to each note, starting from zero.
@@ -105,7 +105,7 @@ def process_files(input_folder, output_folder):
             2. Provide a clear and detailed reason for your assessment based on the following criteria:
 
             ### 2. **End Time vs. Update Creation Time**:
-            - If the **Update Creation Time** is before or at the **End Time**, mark it as **Good**.
+            - If the **Update Creation Time** is before or at the **End Time** within 20 minutes, mark it as **Good**.
             - If the **Update Creation Time** is after the **End Time**, mark it as **Flagged**.
             - If the **End Time** is not provided, mark it as **Flagged**.
             - Always use 12 Hour Time Format should be (e.g., 01:30 AM/PM).
@@ -113,9 +113,11 @@ def process_files(input_folder, output_folder):
 
 
             ### Example End Reason:
-            - **Good Reason**: The Update Creation Time was hours before the End Time. The Update Creation Time was 11:02 AM, and the **End Time** was 12:02 AM. Because the Update Creation Time was before the End Time, the note is marked as Good.
-            - **Flagged Reason**: The Update Creation Time was 33 minutes after the End Time. The End Time was 10:02 AM, and the Update Creation Time was 10:35 AM. Hence, the note is marked as Flagged due to the significant discrepancy.
-
+            - **Good Reason**: The Update Creation Time was 4 minutes before the End Time. The Update Creation Time was 11:02 AM, and the **End Time** was 11:16 AM. Because the Update Creation Time was before the End Time within 20 minutes, the note is marked as Good.
+            - **Flagged Reason**: The Update Creation Time was 32 minutes after the End Time. The Update Creation Time was 10:34 AM, and the End Time was 10:02 AM. Hence, the note is marked as Flagged due to the significant discrepancy.
+            - **Flagged Reason**: The Update Creation Time was 2 hours and 41 minutes before the End Time. The Update Creation Time was 08:01 AM, and the End Time was 11:42 AM. Hence, the note is marked as Flagged due to the significant discrepancy.
+            - **Flagged Reason**: The Update Creation Time was 4 minutes after the End Time. The Update Creation Time was 10:02 AM, and the End Time was 09:58 AM. Hence, the note is marked as Flagged due to the significant discrepancy.
+             
             Use the 12-hour time format (e.g., 10:02 AM, 12:00 PM) in your responses.
             Make sure you provide the correct severity and reason for each note and give each its index in the sequence(starting from zero).
 

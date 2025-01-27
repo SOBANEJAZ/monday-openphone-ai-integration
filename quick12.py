@@ -3,10 +3,9 @@ import os
 
 scripts = [
     "01_reference_collecter.py",
-    "03_notes_cleaner.py",
+    "03_notes_cleaner12.py",
     "04_call_logs_retriever.py",
-    "05_call_ids_retriever.py",
-    "06_call_logs_ids_combiner.py",
+    "06_call_logs_ids_combiner12.py",
     "07_call_transcript_retriever.py",
     "08_call_transcript_cleaner.py",
     "09_calls_notes_combiner.py",
@@ -21,7 +20,7 @@ scripts = [
     "12_2_units.py",
     "13.py",
     "14_hired_units.py",
-    "14_units_monday.py",
+    "14_units_monday12.py",
     "remover.py",
 ]
 
